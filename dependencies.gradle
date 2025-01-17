@@ -36,4 +36,5 @@
 dependencies {
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughItems:2.7.4-GTNH:dev")
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly 'org.apache.bcel:bcel:6.10.0'
 }
