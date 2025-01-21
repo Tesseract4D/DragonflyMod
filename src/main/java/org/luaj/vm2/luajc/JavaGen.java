@@ -43,7 +43,7 @@ public class JavaGen {
 		this.classname = classname;
 
 		// build this class
-		org.luaj.vm2.luajc.JavaBuilder builder = new org.luaj.vm2.luajc.JavaBuilder(pi, classname, filename);
+		JavaBuilder builder = new JavaBuilder(pi, classname, filename);
 		scanInstructions(pi, classname, builder);
 		for (int i = 0; i < pi.prototype.locvars.length; ++i) {
 			LocVars l = pi.prototype.locvars[i];
@@ -62,7 +62,7 @@ public class JavaGen {
 		}
 	}
 
-	private void scanInstructions(ProtoInfo pi, String classname, org.luaj.vm2.luajc.JavaBuilder builder) {
+	private void scanInstructions(ProtoInfo pi, String classname, JavaBuilder builder) {
 		Prototype p = pi.prototype;
 		int vresultbase = -1;
 
@@ -196,7 +196,7 @@ public class JavaGen {
 					builder.loadBoolean(b != 0);
 					builder.storeLocal(pc, a);
 					if (c != 0)
-						builder.addBranch(pc, org.luaj.vm2.luajc.JavaBuilder.BRANCH_GOTO, pc+2);
+						builder.addBranch(pc, JavaBuilder.BRANCH_GOTO, pc+2);
 					break;
 
 				case Lua.OP_JMP: /*	sBx	pc+=sBx					*/
@@ -205,7 +205,7 @@ public class JavaGen {
 							builder.closeUpvalue(pc, i);
 						}
 					}
-					builder.addBranch(pc, org.luaj.vm2.luajc.JavaBuilder.BRANCH_GOTO, pc+1+sbx);
+					builder.addBranch(pc, JavaBuilder.BRANCH_GOTO, pc+1+sbx);
 					break;
 
 				case Lua.OP_EQ: /*	A B C	if ((RK(B) == RK(C)) ~= A) then pc++		*/
@@ -214,19 +214,19 @@ public class JavaGen {
 					loadLocalOrConstant(p, builder, pc, b);
 					loadLocalOrConstant(p, builder, pc, c);
 					builder.compareop(o);
-					builder.addBranch(pc, a != 0? org.luaj.vm2.luajc.JavaBuilder.BRANCH_IFEQ: org.luaj.vm2.luajc.JavaBuilder.BRANCH_IFNE, pc+2);
+					builder.addBranch(pc, a != 0? JavaBuilder.BRANCH_IFEQ: JavaBuilder.BRANCH_IFNE, pc+2);
 					break;
 
 				case Lua.OP_TEST: /*	A C	if not (R(A) <=> C) then pc++			*/
 					builder.loadLocal(pc, a);
 					builder.toBoolean();
-					builder.addBranch(pc, c != 0? org.luaj.vm2.luajc.JavaBuilder.BRANCH_IFEQ: org.luaj.vm2.luajc.JavaBuilder.BRANCH_IFNE, pc+2);
+					builder.addBranch(pc, c != 0? JavaBuilder.BRANCH_IFEQ: JavaBuilder.BRANCH_IFNE, pc+2);
 					break;
 
 				case Lua.OP_TESTSET: /*	A B C	if (R(B) <=> C) then R(A):= R(B) else pc++	*/
 					builder.loadLocal(pc, b);
 					builder.toBoolean();
-					builder.addBranch(pc, c != 0? org.luaj.vm2.luajc.JavaBuilder.BRANCH_IFEQ: org.luaj.vm2.luajc.JavaBuilder.BRANCH_IFNE, pc+2);
+					builder.addBranch(pc, c != 0? JavaBuilder.BRANCH_IFEQ: JavaBuilder.BRANCH_IFNE, pc+2);
 					builder.loadLocal(pc, b);
 					builder.storeLocal(pc, a);
 					break;
@@ -340,7 +340,7 @@ public class JavaGen {
 					builder.loadLocal(pc, a+2);
 					builder.binaryop(Lua.OP_SUB);
 					builder.storeLocal(pc, a);
-					builder.addBranch(pc, org.luaj.vm2.luajc.JavaBuilder.BRANCH_GOTO, pc+1+sbx);
+					builder.addBranch(pc, JavaBuilder.BRANCH_GOTO, pc+1+sbx);
 					break;
 
 				case Lua.OP_FORLOOP: /*	A sBx	R(A)+=R(A+2): if R(A) <?= R(A+1) then { pc+=sBx: R(A+3)=R(A) }*/
@@ -354,7 +354,7 @@ public class JavaGen {
 					builder.loadLocal(pc, a+1); // limit
 					builder.loadLocal(pc, a+2); // step
 					builder.testForLoop();
-					builder.addBranch(pc, org.luaj.vm2.luajc.JavaBuilder.BRANCH_IFNE, pc+1+sbx);
+					builder.addBranch(pc, JavaBuilder.BRANCH_IFNE, pc+1+sbx);
 					break;
 
 				case Lua.OP_TFORCALL: /* A C	R(A+3), ... ,R(A+2+C) := R(A)(R(A+1), R(A+2));	*/
@@ -375,7 +375,7 @@ public class JavaGen {
 					builder.dup();
 					builder.storeLocal(pc, a);
 					builder.isNil();
-					builder.addBranch(pc, org.luaj.vm2.luajc.JavaBuilder.BRANCH_IFEQ, pc+1+sbx);
+					builder.addBranch(pc, JavaBuilder.BRANCH_IFEQ, pc+1+sbx);
 					break;
 
 				case Lua.OP_SETLIST: /*	A B C	R(A)[(C-1)*FPF+i]:= R(A+i), 1 <= i <= B	*/
@@ -434,7 +434,7 @@ public class JavaGen {
 		}
 	}
 
-	private void loadVarargResults(org.luaj.vm2.luajc.JavaBuilder builder, int pc, int a, int vresultbase) {
+	private void loadVarargResults(JavaBuilder builder, int pc, int a, int vresultbase) {
 		if (vresultbase <= a) {
 			builder.loadVarresult();
 			builder.subargs(a+1-vresultbase);

@@ -44,16 +44,16 @@ import java.lang.ref.WeakReference;
  * is possible to yield from anywhere in luaj.
  * <p>
  * Each Java thread wakes up at regular intervals and checks a weak reference to
- * determine if it can ever be resumed. If not, it throws {@link org.luaj.vm2.OrphanedThread}
- * which is an {@link Error}. Applications should not catch
- * {@link org.luaj.vm2.OrphanedThread}, because it can break the thread safety of luaj. The
+ * determine if it can ever be resumed. If not, it throws {@link OrphanedThread}
+ * which is an {@link java.lang.Error}. Applications should not catch
+ * {@link OrphanedThread}, because it can break the thread safety of luaj. The
  * value controlling the polling interval is
  * {@link #thread_orphan_check_interval} and may be set by the user.
  * <p>
  * There are two main ways to abandon a coroutine. The first is to call
- * {@code yield()} from lua, or equivalently {@link Globals#yield(org.luaj.vm2.Varargs)}, and
+ * {@code yield()} from lua, or equivalently {@link Globals#yield(Varargs)}, and
  * arrange to have it never resumed possibly by values passed to yield. The
- * second is to throw {@link org.luaj.vm2.OrphanedThread}, which should put the thread in a
+ * second is to throw {@link OrphanedThread}, which should put the thread in a
  * dead state. In either case all references to the thread must be dropped, and
  * the garbage collector must run for the thread to be garbage collected.
  *
@@ -155,8 +155,8 @@ public class LuaThread extends LuaValue {
 
 	public boolean isMainThread() { return this.state.function == null; }
 
-	public org.luaj.vm2.Varargs resume(org.luaj.vm2.Varargs args) {
-		final State s = this.state;
+	public Varargs resume(Varargs args) {
+		final LuaThread.State s = this.state;
 		if (s.status > LuaThread.STATUS_SUSPENDED)
 			return LuaValue.varargsOf(LuaValue.FALSE, LuaValue.valueOf(
 				"cannot resume " + (s.status == LuaThread.STATUS_DEAD? "dead": "non-suspended") + " coroutine"));
@@ -167,8 +167,8 @@ public class LuaThread extends LuaValue {
 		private final Globals globals;
 		final WeakReference   lua_thread;
 		public final LuaValue function;
-		org.luaj.vm2.Varargs args   = LuaValue.NONE;
-		org.luaj.vm2.Varargs result = LuaValue.NONE;
+		Varargs               args   = LuaValue.NONE;
+		Varargs               result = LuaValue.NONE;
 		String                error  = null;
 
 		/** Hook function control state used by debug lib. */
@@ -193,7 +193,7 @@ public class LuaThread extends LuaValue {
 		@Override
 		public synchronized void run() {
 			try {
-				org.luaj.vm2.Varargs a = this.args;
+				Varargs a = this.args;
 				this.args = LuaValue.NONE;
 				this.result = function.invoke(a);
 			} catch (Throwable t) {
@@ -204,7 +204,7 @@ public class LuaThread extends LuaValue {
 			}
 		}
 
-		public synchronized org.luaj.vm2.Varargs lua_resume(LuaThread new_thread, org.luaj.vm2.Varargs args) {
+		public synchronized Varargs lua_resume(LuaThread new_thread, Varargs args) {
 			LuaThread previous_thread = globals.running;
 			try {
 				globals.running = new_thread;
@@ -222,7 +222,7 @@ public class LuaThread extends LuaValue {
 				return this.error != null? LuaValue.varargsOf(LuaValue.FALSE, LuaValue.valueOf(this.error))
 					: LuaValue.varargsOf(LuaValue.TRUE, this.result);
 			} catch (InterruptedException ie) {
-				throw new org.luaj.vm2.OrphanedThread();
+				throw new OrphanedThread();
 			} finally {
 				this.args = LuaValue.NONE;
 				this.result = LuaValue.NONE;
@@ -233,7 +233,7 @@ public class LuaThread extends LuaValue {
 			}
 		}
 
-		public synchronized org.luaj.vm2.Varargs lua_yield(Varargs args) {
+		public synchronized Varargs lua_yield(Varargs args) {
 			try {
 				this.result = args;
 				this.status = STATUS_SUSPENDED;
@@ -242,7 +242,7 @@ public class LuaThread extends LuaValue {
 					this.wait(thread_orphan_check_interval);
 					if (this.lua_thread.get() == null) {
 						this.status = STATUS_DEAD;
-						throw new org.luaj.vm2.OrphanedThread();
+						throw new OrphanedThread();
 					}
 				} while ( this.status == STATUS_SUSPENDED );
 				return this.args;

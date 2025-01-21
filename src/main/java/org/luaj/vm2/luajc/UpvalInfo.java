@@ -4,15 +4,12 @@
 package org.luaj.vm2.luajc;
 
 import org.luaj.vm2.Lua;
-import org.luaj.vm2.luajc.BasicBlock;
-import org.luaj.vm2.luajc.ProtoInfo;
-import org.luaj.vm2.luajc.VarInfo;
 
 public class UpvalInfo {
 	ProtoInfo pi;    // where defined
 	int       slot;  // where defined
 	int       nvars; // number of vars involved
-	org.luaj.vm2.luajc.VarInfo var[]; // list of vars
+	VarInfo   var[]; // list of vars
 	boolean   rw;    // read-write
 
 	// Upval info representing the implied context containing only the environment.
@@ -20,7 +17,7 @@ public class UpvalInfo {
 		this.pi = pi;
 		this.slot = 0;
 		this.nvars = 1;
-		this.var = new org.luaj.vm2.luajc.VarInfo[] { org.luaj.vm2.luajc.VarInfo.PARAM(0) };
+		this.var = new VarInfo[] { VarInfo.PARAM(0) };
 		this.rw = false;
 	}
 
@@ -35,8 +32,8 @@ public class UpvalInfo {
 		this.rw = nvars > 1;
 	}
 
-	private boolean includeVarAndPosteriorVars(org.luaj.vm2.luajc.VarInfo var) {
-		if (var == null || var == org.luaj.vm2.luajc.VarInfo.INVALID)
+	private boolean includeVarAndPosteriorVars(VarInfo var) {
+		if (var == null || var == VarInfo.INVALID)
 			return false;
 		if (var.upvalue == this)
 			return true;
@@ -50,7 +47,7 @@ public class UpvalInfo {
 		return loopDetected;
 	}
 
-	private boolean isLoopVariable(org.luaj.vm2.luajc.VarInfo var) {
+	private boolean isLoopVariable(VarInfo var) {
 		if (var.pc >= 0) {
 			switch (Lua.GET_OPCODE(pi.prototype.code[var.pc])) {
 			case Lua.OP_TFORLOOP:
@@ -61,14 +58,14 @@ public class UpvalInfo {
 		return false;
 	}
 
-	private boolean includePosteriorVarsCheckLoops(org.luaj.vm2.luajc.VarInfo prior) {
+	private boolean includePosteriorVarsCheckLoops(VarInfo prior) {
 		boolean loopDetected = false;
 		for (BasicBlock b : pi.blocklist) {
-			org.luaj.vm2.luajc.VarInfo v = pi.vars[slot][b.pc1];
+			VarInfo v = pi.vars[slot][b.pc1];
 			if (v == prior) {
 				for (int j = 0, m = b.next != null? b.next.length: 0; j < m; j++) {
 					BasicBlock b1 = b.next[j];
-					org.luaj.vm2.luajc.VarInfo v1 = pi.vars[slot][b1.pc0];
+					VarInfo v1 = pi.vars[slot][b1.pc0];
 					if (v1 != prior) {
 						loopDetected |= includeVarAndPosteriorVars(v1);
 						if (v1.isPhiVar())
@@ -87,13 +84,13 @@ public class UpvalInfo {
 		return loopDetected;
 	}
 
-	private void includePriorVarsIgnoreLoops(org.luaj.vm2.luajc.VarInfo poster) {
+	private void includePriorVarsIgnoreLoops(VarInfo poster) {
 		for (BasicBlock b : pi.blocklist) {
-			org.luaj.vm2.luajc.VarInfo v = pi.vars[slot][b.pc0];
+			VarInfo v = pi.vars[slot][b.pc0];
 			if (v == poster) {
 				for (int j = 0, m = b.prev != null? b.prev.length: 0; j < m; j++) {
 					BasicBlock b0 = b.prev[j];
-					org.luaj.vm2.luajc.VarInfo v0 = pi.vars[slot][b0.pc1];
+					VarInfo v0 = pi.vars[slot][b0.pc1];
 					if (v0 != poster)
 						includeVarAndPosteriorVars(v0);
 				}
@@ -108,12 +105,12 @@ public class UpvalInfo {
 		}
 	}
 
-	private void appendVar(org.luaj.vm2.luajc.VarInfo v) {
+	private void appendVar(VarInfo v) {
 		if (nvars == 0) {
-			var = new org.luaj.vm2.luajc.VarInfo[1];
+			var = new VarInfo[1];
 		} else if (nvars+1 >= var.length) {
-			org.luaj.vm2.luajc.VarInfo[] s = var;
-			var = new org.luaj.vm2.luajc.VarInfo[nvars*2+1];
+			VarInfo[] s = var;
+			var = new VarInfo[nvars*2+1];
 			System.arraycopy(s, 0, var, 0, nvars);
 		}
 		var[nvars++] = v;

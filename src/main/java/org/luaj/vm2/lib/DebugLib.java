@@ -37,10 +37,6 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Print;
 import org.luaj.vm2.Prototype;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.LibFunction;
-import org.luaj.vm2.lib.TwoArgFunction;
-import org.luaj.vm2.lib.VarArgFunction;
-import org.luaj.vm2.lib.ZeroArgFunction;
 
 /**
  * Subclass of {@link LibFunction} which implements the lua standard
@@ -50,7 +46,7 @@ import org.luaj.vm2.lib.ZeroArgFunction;
  * C-based lua library. To do this, it must maintain a separate stack of calls
  * to {@link LuaClosure} and {@link LibFunction} instances. Especially when
  * lua-to-java bytecode compiling is being used via a
- * {@link Globals.Compiler} such as
+ * {@link org.luaj.vm2.Globals.Compiler} such as
  * {@link org.luaj.vm2.luajc.LuaJC}, this cannot be done in all cases.
  * <p>
  * Typically, this library is included as part of a call to either
@@ -191,10 +187,10 @@ public class DebugLib extends TwoArgFunction {
 			LuaThread thread = args.isthread(a)? args.checkthread(a++): globals.running;
 			LuaValue func = args.arg(a++);
 			String what = args.optjstring(a++, "flnStu");
-			CallStack callstack = callstack(thread);
+			DebugLib.CallStack callstack = callstack(thread);
 
 			// find the stack info
-			CallFrame frame;
+			DebugLib.CallFrame frame;
 			if (func.isnumber()) {
 				frame = callstack.getCallFrame(func.toint());
 				if (frame == null)
@@ -234,7 +230,7 @@ public class DebugLib extends TwoArgFunction {
 			if (what.indexOf('L') >= 0) {
 				LuaTable lines = new LuaTable();
 				info.set(ACTIVELINES, lines);
-				CallFrame cf;
+				DebugLib.CallFrame cf;
 				for (int l = 1; (cf = callstack.getCallFrame(l)) != null; ++l)
 					if (cf.f == func)
 						lines.insert(-1, valueOf(cf.currentline()));
@@ -260,7 +256,7 @@ public class DebugLib extends TwoArgFunction {
 				return func.checkclosure().p.getlocalname(local, 0);
 
 			// find the stack info
-			CallFrame frame = callstack(thread).getCallFrame(func.checkint());
+			DebugLib.CallFrame frame = callstack(thread).getCallFrame(func.checkint());
 			if (frame == null)
 				return argerror(a, "level out of range");
 			return frame.getLocal(local);
@@ -628,7 +624,7 @@ public class DebugLib extends TwoArgFunction {
 		synchronized String traceback(int level) {
 			StringBuffer sb = new StringBuffer();
 			sb.append("stack traceback:");
-			for (CallFrame c; (c = getCallFrame(level++)) != null;) {
+			for (DebugLib.CallFrame c; (c = getCallFrame(level++)) != null;) {
 				sb.append("\n\t");
 				sb.append(c.shortsource());
 				sb.append(':');
@@ -654,13 +650,13 @@ public class DebugLib extends TwoArgFunction {
 			return sb.toString();
 		}
 
-		synchronized CallFrame getCallFrame(int level) {
+		synchronized DebugLib.CallFrame getCallFrame(int level) {
 			if (level < 1 || level > calls)
 				return null;
 			return frame[calls-level];
 		}
 
-		synchronized CallFrame findCallFrame(LuaValue func) {
+		synchronized DebugLib.CallFrame findCallFrame(LuaValue func) {
 			for (int i = 1; i <= calls; ++i)
 				if (frame[calls-i].f == func)
 					return frame[i];
@@ -828,7 +824,7 @@ public class DebugLib extends TwoArgFunction {
 	}
 
 	// Return the name info if found, or null if no useful information could be found.
-	static NameWhat getfuncname(CallFrame frame) {
+	static NameWhat getfuncname(DebugLib.CallFrame frame) {
 		if (!frame.f.isclosure())
 			return new NameWhat(frame.f.classnamestub(), "Java");
 		Prototype p = frame.f.checkclosure().p;

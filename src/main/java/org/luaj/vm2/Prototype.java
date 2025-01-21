@@ -86,7 +86,7 @@ package org.luaj.vm2;
  * </pre>
  *
  * To execute the code represented by the {@link Prototype} it must be supplied
- * to the constructor of a {@link org.luaj.vm2.LuaClosure}:
+ * to the constructor of a {@link LuaClosure}:
  *
  * <pre>
  * {
@@ -126,7 +126,7 @@ public class Prototype {
 	public LocVars[] locvars;
 	/* upvalue information */
 	public Upvaldesc[]               upvalues;
-	public org.luaj.vm2.LuaString source;
+	public LuaString                 source;
 	public int                       linedefined;
 	public int                       lastlinedefined;
 	public int                       numparams;

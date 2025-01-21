@@ -21,8 +21,6 @@
 ******************************************************************************/
 package org.luaj.vm2.script;
 
-import org.luaj.vm2.script.LuaScriptEngine;
-
 import java.util.Arrays;
 import java.util.List;
 

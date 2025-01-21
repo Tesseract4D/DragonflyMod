@@ -21,14 +21,11 @@
  ******************************************************************************/
 package org.luaj.vm2.server;
 
-import org.luaj.vm2.server.DefaultLauncher;
-import org.luaj.vm2.server.LuajClassLoader;
-
 import java.io.InputStream;
 import java.io.Reader;
 
 /**
- * Interface to launch lua scripts using the {@link org.luaj.vm2.server.LuajClassLoader}.
+ * Interface to launch lua scripts using the {@link LuajClassLoader}.
  * <P>
  * <em>Note: This class is experimental and subject to change in future
  * versions.</em>
@@ -37,13 +34,13 @@ import java.io.Reader;
  * classes can come from the class loader.
  * <P>
  * The implementation should be acquired using
- * {@link org.luaj.vm2.server.LuajClassLoader#NewLauncher()} or
- * {@link org.luaj.vm2.server.LuajClassLoader#NewLauncher(Class)} which ensure that the classes are
+ * {@link LuajClassLoader#NewLauncher()} or
+ * {@link LuajClassLoader#NewLauncher(Class)} which ensure that the classes are
  * loaded to give each Launcher instance a pristine set of Globals, including
  * the shared metatables.
  *
- * @see org.luaj.vm2.server.LuajClassLoader
- * @see org.luaj.vm2.server.LuajClassLoader#NewLauncher()
+ * @see LuajClassLoader
+ * @see LuajClassLoader#NewLauncher()
  * @see LuajClassLoader#NewLauncher(Class)
  * @see DefaultLauncher
  * @since luaj 3.0.1

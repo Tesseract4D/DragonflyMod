@@ -8,11 +8,9 @@ import cn.tesseract.dragonfly.lua.LuaBridge;
 import cn.tesseract.dragonfly.lua.LuaHookRegistry;
 import cn.tesseract.dragonfly.lua.LuaHookTransformer;
 import cn.tesseract.mycelium.asm.minecraft.HookLoader;
+import cpw.mods.fml.common.LoaderState;
 import net.minecraft.launchwrapper.Launch;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LoadState;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
+import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.*;
@@ -20,10 +18,11 @@ import org.luaj.vm2.lib.jse.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DragonflyCoreMod extends HookLoader {
-    public static Globals globals;
-    public static String phase = "coremod";
+    public static Map<String, Globals> globals = new HashMap<>();
     public static File scriptDir;
 
     static {
@@ -31,58 +30,73 @@ public class DragonflyCoreMod extends HookLoader {
         scriptDir.mkdir();
     }
 
-    public static Globals getLuaGlobals() {
-        if (globals == null) {
-            globals = new Globals();
+    public static Globals getLuaGlobals(String modid) {
+        Globals g;
+        if ((g = globals.get(modid)) != null) return g;
 
-            globals.load(new DragonflyBaseLib());
-            globals.load(new PackageLib());
-            globals.load(new Bit32Lib());
-            globals.load(new TableLib());
-            globals.load(new JseStringLib());
-            globals.load(new CoroutineLib());
-            globals.load(new JseMathLib());
-            globals.load(new JseIoLib());
-            globals.load(new JseOsLib());
-            globals.load(new LuajavaLib());
-            LoadState.install(globals);
-            LuaC.install(globals);
+        final Globals f = new Globals();
+        globals.put(modid, f);
 
-            globals.set("import", new VarArgFunction() {
-                @Override
-                public Varargs invoke(Varargs args) {
-                    String className = args.arg1().tojstring();
-                    try {
-                        globals.set(className.substring(className.lastIndexOf('.') + 1), CoerceJavaToLua.coerce(Class.forName(className)));
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return NONE;
+        f.load(new DragonflyBaseLib());
+        f.load(new PackageLib());
+        f.load(new Bit32Lib());
+        f.load(new TableLib());
+        f.load(new JseStringLib());
+        f.load(new CoroutineLib());
+        f.load(new JseMathLib());
+        f.load(new JseIoLib());
+        f.load(new JseOsLib());
+        f.load(new LuajavaLib());
+        LoadState.install(f);
+        LuaC.install(f);
+
+        f.set("import", new OneArgFunction() {
+            @Override
+            public LuaValue call(LuaValue arg) {
+                String className = arg.tojstring();
+                try {
+                    f.set(className.substring(className.lastIndexOf('.') + 1), CoerceJavaToLua.coerce(Class.forName(className)));
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
-            });
-            globals.set("log", new VarArgFunction() {
-                @Override
-                public Varargs invoke(Varargs args) {
-                    Dragonfly.logger.info(args.arg1().tostring());
-                    return NONE;
+                return NONE;
+            }
+        });
+        f.set("importAs", new OneArgFunction() {
+            @Override
+            public LuaValue call(LuaValue arg) {
+                try {
+                    return CoerceJavaToLua.coerce(Class.forName(arg.tojstring()));
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
-            });
-            globals.set("registerLuaEvent", new VarArgFunction() {
-                @Override
-                public Varargs invoke(Varargs args) {
-                    LuaHookRegistry.registerLuaEvent(args.arg1().tojstring(), args.arg(2));
-                    return NONE;
-                }
-            });
-            globals.set("registerLuaHook", new VarArgFunction() {
-                @Override
-                public Varargs invoke(Varargs args) {
-                    LuaHookRegistry.registerLuaHook(args.arg1().tojstring(), args.arg(2), args.arg(3).checktable());
-                    return NONE;
-                }
-            });
-        }
-        return globals;
+            }
+        });
+        f.set("log", new OneArgFunction() {
+            @Override
+            public LuaValue call(LuaValue arg) {
+                Dragonfly.logger.info(arg.arg1().tostring());
+                return NONE;
+            }
+        });
+        f.set("registerLuaEvent", new TwoArgFunction() {
+            @Override
+            public LuaValue call(LuaValue arg1, LuaValue arg2) {
+                LuaHookRegistry.registerLuaEvent(arg1.arg1().tojstring(), arg2.arg(2));
+                return NONE;
+            }
+        });
+        f.set("registerLuaHook", new VarArgFunction() {
+            @Override
+            public Varargs invoke(Varargs args) {
+                LuaHookRegistry.registerLuaHook(modid + ":" + args.arg1().tojstring(), args.arg(2), args.arg(3).checktable());
+                return NONE;
+            }
+        });
+        f.set("preInitEvent", LuaString.valueOf(modid + ":" + LoaderState.ModState.PREINITIALIZED));
+        f.set("initEvent", LuaString.valueOf(modid + ":" + LoaderState.ModState.INITIALIZED));
+        f.set("postInitEvent", LuaString.valueOf(modid + ":" + LoaderState.ModState.POSTINITIALIZED));
+        return f;
     }
 
     @Override
@@ -97,20 +111,20 @@ public class DragonflyCoreMod extends HookLoader {
 
     @Override
     protected void registerHooks() {
-        phase = "hook";
         try {
-            File file = new File(scriptDir, "main.lua");
-            if (file.exists()) {
-                LuaValue chunk = getLuaGlobals().load(new FileReader(file), file.getName());
-                chunk.call();
-                LuaBridge.callLuaEvent(new LuaReloadEvent(true));
+            File[] files = scriptDir.listFiles();
+            if (files != null) for (File file : files) {
+                if (file.isFile() && file.getName().endsWith(".lua")) {
+                    LuaValue chunk = getLuaGlobals("dragonfly").load(new FileReader(file), file.getName());
+                    chunk.call();
+                }
             }
+            LuaBridge.callLuaEvent("reload", new LuaReloadEvent(true));
             Class.forName(LuaHookTransformer.luaHookClass);
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        if (!LuaBridge.eventList.isEmpty())
-            registerHookContainer(ForgeEventHook.class.getName());
+        if (!LuaBridge.eventList.isEmpty()) registerHookContainer(ForgeEventHook.class.getName());
         registerHookContainer(DragonflyHook.class.getName());
     }
 }

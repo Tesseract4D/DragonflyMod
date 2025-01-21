@@ -22,7 +22,6 @@
 package org.luaj.vm2.ast;
 
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.ast.NameScope;
 
 /**
  * Variable is created lua name scopes, and is a named, lua variable that either
@@ -34,7 +33,7 @@ public class Variable {
 	public final String name;
 
 	/** The lua scope in which this variable is defined. */
-	public final org.luaj.vm2.ast.NameScope definingScope;
+	public final NameScope definingScope;
 
 	/** true if this variable is an upvalue */
 	public boolean isupvalue;

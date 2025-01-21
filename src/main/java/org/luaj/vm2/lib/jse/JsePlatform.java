@@ -33,12 +33,6 @@ import org.luaj.vm2.lib.PackageLib;
 import org.luaj.vm2.lib.ResourceFinder;
 import org.luaj.vm2.lib.StringLib;
 import org.luaj.vm2.lib.TableLib;
-import org.luaj.vm2.lib.jse.JseBaseLib;
-import org.luaj.vm2.lib.jse.JseIoLib;
-import org.luaj.vm2.lib.jse.JseMathLib;
-import org.luaj.vm2.lib.jse.JseOsLib;
-import org.luaj.vm2.lib.jse.JseStringLib;
-import org.luaj.vm2.lib.jse.LuajavaLib;
 
 /**
  * The {@link org.luaj.vm2.lib.jse.JsePlatform} class is a convenience class to

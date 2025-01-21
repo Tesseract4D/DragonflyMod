@@ -6,7 +6,6 @@ import java.util.Map;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Prototype;
-import org.luaj.vm2.luajc.JavaGen;
 
 /*******************************************************************************
  * Copyright (c) 2010 Luaj.org. All rights reserved.
@@ -37,11 +36,11 @@ public class JavaLoader extends ClassLoader {
 	}
 
 	public LuaFunction load(Prototype p, String classname, String filename, LuaValue env) {
-		org.luaj.vm2.luajc.JavaGen jg = new org.luaj.vm2.luajc.JavaGen(p, classname, filename, false);
+		JavaGen jg = new JavaGen(p, classname, filename, false);
 		return load(jg, env);
 	}
 
-	public LuaFunction load(org.luaj.vm2.luajc.JavaGen jg, LuaValue env) {
+	public LuaFunction load(JavaGen jg, LuaValue env) {
 		include(jg);
 		return load(jg.classname, env);
 	}

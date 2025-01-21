@@ -26,9 +26,6 @@ import java.lang.reflect.Field;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.lib.jse.CoerceLuaToJava;
-import org.luaj.vm2.lib.jse.JavaClass;
 
 /**
  * LuaValue that represents a Java instance.
@@ -43,7 +40,7 @@ import org.luaj.vm2.lib.jse.JavaClass;
  */
 public class JavaInstance extends LuaUserdata {
 
-	org.luaj.vm2.lib.jse.JavaClass jclass;
+	JavaClass jclass;
 
 	JavaInstance(Object instance) {
 		super(instance);
@@ -52,7 +49,7 @@ public class JavaInstance extends LuaUserdata {
 	@Override
 	public LuaValue get(LuaValue key) {
 		if (jclass == null)
-			jclass = org.luaj.vm2.lib.jse.JavaClass.forClass(m_instance.getClass());
+			jclass = JavaClass.forClass(m_instance.getClass());
 		Field f = jclass.getField(key);
 		if (f != null)
 			try {
@@ -65,7 +62,7 @@ public class JavaInstance extends LuaUserdata {
 			return m;
 		Class c = jclass.getInnerClass(key);
 		if (c != null)
-			return org.luaj.vm2.lib.jse.JavaClass.forClass(c);
+			return JavaClass.forClass(c);
 		return super.get(key);
 	}
 

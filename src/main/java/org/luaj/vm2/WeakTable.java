@@ -27,32 +27,32 @@ import org.luaj.vm2.LuaTable.Slot;
 import org.luaj.vm2.LuaTable.StrongSlot;
 
 /**
- * Subclass of {@link org.luaj.vm2.LuaTable} that provides weak key and weak value semantics.
+ * Subclass of {@link LuaTable} that provides weak key and weak value semantics.
  * <p>
  * Normally these are not created directly, but indirectly when changing the
- * mode of a {@link org.luaj.vm2.LuaTable} as lua script executes.
+ * mode of a {@link LuaTable} as lua script executes.
  * <p>
  * However, calling the constructors directly when weak tables are required from
  * Java will reduce overhead.
  */
-public class WeakTable implements org.luaj.vm2.Metatable {
+public class WeakTable implements Metatable {
 
 	private final boolean  weakkeys, weakvalues;
 	private final LuaValue backing;
 
-	public static org.luaj.vm2.LuaTable make(boolean weakkeys, boolean weakvalues) {
-		org.luaj.vm2.LuaString mode;
+	public static LuaTable make(boolean weakkeys, boolean weakvalues) {
+		LuaString mode;
 		if (weakkeys && weakvalues) {
-			mode = org.luaj.vm2.LuaString.valueOf("kv");
+			mode = LuaString.valueOf("kv");
 		} else if (weakkeys) {
-			mode = org.luaj.vm2.LuaString.valueOf("k");
+			mode = LuaString.valueOf("k");
 		} else if (weakvalues) {
 			mode = LuaString.valueOf("v");
 		} else {
 			return LuaValue.tableOf();
 		}
-		org.luaj.vm2.LuaTable table = LuaValue.tableOf();
-		org.luaj.vm2.LuaTable mt = LuaValue.tableOf(new LuaValue[] { LuaValue.MODE, mode });
+		LuaTable table = LuaValue.tableOf();
+		LuaTable mt = LuaValue.tableOf(new LuaValue[] { LuaValue.MODE, mode });
 		table.setmetatable(mt);
 		return table;
 	}
@@ -99,7 +99,7 @@ public class WeakTable implements org.luaj.vm2.Metatable {
 		if (weakvalues && !(value.isnumber() || value.isstring() || value.isboolean())) {
 			return new WeakValueSlot(key, value, null);
 		}
-		return org.luaj.vm2.LuaTable.defaultEntry(key, value);
+		return LuaTable.defaultEntry(key, value);
 	}
 
 	public static abstract class WeakSlot implements Slot {
@@ -124,7 +124,7 @@ public class WeakTable implements org.luaj.vm2.Metatable {
 			LuaValue key = strongkey();
 			LuaValue value = strongvalue();
 			if (key != null && value != null) {
-				return new org.luaj.vm2.LuaTable.NormalEntry(key, value);
+				return new LuaTable.NormalEntry(key, value);
 			} else {
 				this.key = null;
 				this.value = null;
@@ -234,7 +234,7 @@ public class WeakTable implements org.luaj.vm2.Metatable {
 
 		@Override
 		public int keyindex(int mask) {
-			return org.luaj.vm2.LuaTable.hashmod(keyhash, mask);
+			return LuaTable.hashmod(keyhash, mask);
 		}
 
 		@Override
@@ -266,7 +266,7 @@ public class WeakTable implements org.luaj.vm2.Metatable {
 
 		@Override
 		public int keyindex(int mask) {
-			return org.luaj.vm2.LuaTable.hashSlot(strongkey(), mask);
+			return LuaTable.hashSlot(strongkey(), mask);
 		}
 
 		@Override

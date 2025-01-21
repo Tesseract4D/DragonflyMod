@@ -5,22 +5,24 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 
-public class LuaFunctionContainer {
+public class LuaHookContainer {
     public LuaValue func;
     public final String name;
     public final int hookIndex;
     public final Class returnType;
+    public final boolean reloadable;
     public boolean error = false;
 
-    public LuaFunctionContainer(String name, LuaValue func, int hookIndex) {
-        this(name, func, hookIndex, Object.class);
+    public LuaHookContainer(String name, LuaValue func, int hookIndex, boolean reloadable) {
+        this(name, func, hookIndex, Object.class, reloadable);
     }
 
-    public LuaFunctionContainer(String name, LuaValue func, int hookIndex, Class returnType) {
+    public LuaHookContainer(String name, LuaValue func, int hookIndex, Class returnType, boolean reloadable) {
         this.name = name;
         this.func = func;
         this.hookIndex = hookIndex;
         this.returnType = returnType;
+        this.reloadable = reloadable;
     }
 
     public Object call(LuaValue[] obj) {

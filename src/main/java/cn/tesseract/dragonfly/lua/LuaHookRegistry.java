@@ -9,6 +9,11 @@ public class LuaHookRegistry {
     public static void registerLuaEvent(String eventType, LuaValue fn) {
         ArrayList<LuaValue> list = LuaBridge.eventList.computeIfAbsent(eventType, k -> new ArrayList<>());
         list.add(fn);
+        if (LuaBridge.reloading) {
+            if (eventType.equals("reload"))
+                throw new IllegalStateException();
+            LuaBridge.reloadableEventList.add(fn);
+        }
     }
 
     public static void registerLuaHook(String name, LuaValue fn, LuaTable obj) {

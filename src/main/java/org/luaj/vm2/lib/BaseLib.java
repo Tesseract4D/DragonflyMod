@@ -129,19 +129,19 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 		env.set("next", next = new next());
 		env.set("pairs", new pairsbase(PAIRS, NIL, next));
 		env.set("ipairs", new pairsbase(IPAIRS, ZERO, new inext()));
-
+		
 		return env;
 	}
 
 	/** ResourceFinder implementation
-	 *
+	 * 
 	 * Tries to open the file as a resource, which can work for JSE and JME.
 	 */
 	public InputStream findResource(String filename) {
 		return getClass().getResourceAsStream(filename.startsWith("/")? filename: "/"+filename);
 	}
 
-
+	
 	// "assert", // ( v [,message] ) -> v, message | ERR
 	static final class _assert extends VarArgFunction {
 		public Varargs invoke(Varargs args) {
@@ -231,7 +231,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 				loadFile( filename, mode, env );
 		}
 	}
-
+		
 	// "pcall", // (f, arg1, ...) -> status, result1, ...
 	final class pcall extends VarArgFunction {
 		@Override
@@ -300,7 +300,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 		}
 	}
 
-
+	
 	// "rawlen", // (v) -> value
 	static final class rawlen extends LibFunction {
 		public LuaValue call(LuaValue arg) {
@@ -323,7 +323,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 			return t;
 		}
 	}
-
+	
 	// "select", // (f, ...) -> value1, ...
 	static final class select extends VarArgFunction {
 		public Varargs invoke(Varargs args) {
@@ -336,7 +336,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 			return args.subargs(i<0? n+i+2: i+1);
 		}
 	}
-
+	
 	// "setmetatable", // (table, metatable) -> table
 	static final class setmetatable extends TableLibFunction {
 		public LuaValue call(LuaValue table) {
@@ -349,7 +349,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 			return table.setmetatable(metatable.isnil()? null: metatable.checktable());
 		}
 	}
-
+	
 	// "tonumber", // (e [,base]) -> value
 	static final class tonumber extends LibFunction {
 		public LuaValue call(LuaValue e) {
@@ -364,7 +364,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 			return e.checkstring().tonumber(b);
 		}
 	}
-
+	
 	// "tostring", // (e) -> value
 	static final class tostring extends LibFunction {
 		public LuaValue call(LuaValue arg) {
@@ -438,14 +438,14 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 			return varargsOf(iter, args.checktable(1), initial);
 		}
 	}
-
+	
 	// "next"  ( table, [index] ) -> next-index, next-value
 	static final class next extends VarArgFunction {
 		public Varargs invoke(Varargs args) {
 			return args.checktable(1).next(args.arg(2));
 		}
 	}
-
+	
 	// "inext" ( table, [int-index] ) -> next-index, next-value
 	static final class inext extends VarArgFunction {
 		@Override
@@ -453,7 +453,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 			return args.checktable(1).inext(args.arg(2));
 		}
 	}
-
+	
 	/**
 	 * Load from a named file, returning the chunk or nil,error of can't load
 	 * @param env
@@ -484,7 +484,7 @@ public class BaseLib extends TwoArgFunction implements ResourceFinder {
 			return varargsOf(NIL, valueOf(e.getMessage()));
 		}
 	}
-
+	
 	private static class StringInputStream extends InputStream {
 		final LuaValue func;
 		byte[] bytes;

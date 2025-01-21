@@ -21,10 +21,6 @@
 ******************************************************************************/
 package org.luaj.vm2.ast;
 
-import org.luaj.vm2.ast.Exp;
-import org.luaj.vm2.ast.TableField;
-import org.luaj.vm2.ast.Visitor;
-
 import java.util.List;
 
 public class TableConstructor extends Exp {

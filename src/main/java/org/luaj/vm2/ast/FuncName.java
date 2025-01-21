@@ -21,9 +21,6 @@
 ******************************************************************************/
 package org.luaj.vm2.ast;
 
-import org.luaj.vm2.ast.Name;
-import org.luaj.vm2.ast.SyntaxElement;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +28,7 @@ public class FuncName extends SyntaxElement {
 	// example: a.b.c.d:e
 
 	// initial base name: "a"
-	public final org.luaj.vm2.ast.Name name;
+	public final Name name;
 
 	// intermediate field accesses: "b", "c", "d"
 	public List<String> dots;

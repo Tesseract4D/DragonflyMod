@@ -85,7 +85,7 @@ import org.luaj.vm2.lib.ResourceFinder;
  *      Reference</a>
  */
 
-public class JseBaseLib extends BaseLib {
+public class JseBaseLib extends org.luaj.vm2.lib.BaseLib {
 
 	/** Perform one-time initialization on the library by creating a table
 	 * containing the library functions, adding that table to the supplied environment,
@@ -110,8 +110,8 @@ public class JseBaseLib extends BaseLib {
 	 * It falls back to the base implementation that looks it up as a resource
 	 * in the class path if not found as a plain file.
 	 *
-	 * @see BaseLib
-	 * @see ResourceFinder
+	 * @see org.luaj.vm2.lib.BaseLib
+	 * @see org.luaj.vm2.lib.ResourceFinder
 	 *
 	 * @param filename
 	 * @return InputStream, or null if not found.

@@ -34,7 +34,7 @@ import org.luaj.vm2.Upvaldesc;
 import org.luaj.vm2.compiler.LexState.ConsControl;
 import org.luaj.vm2.compiler.LexState.expdesc;
 
-public class FuncState extends org.luaj.vm2.compiler.Constants {
+public class FuncState extends Constants {
 
 	static class BlockCnt {
 		BlockCnt previous;   /* chain */
@@ -48,11 +48,11 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	Prototype f;          /* current function header */
 	Hashtable h;          /* table to find (and reuse) elements in `k' */
 	FuncState prev;       /* enclosing function */
-	org.luaj.vm2.compiler.LexState ls;         /* lexical state */
+	LexState  ls;         /* lexical state */
 	BlockCnt  bl;         /* chain of current blocks */
 	int       pc;         /* next position to code (equivalent to `ncode') */
 	int       lasttarget; /* `pc' of last `jump target' */
-	IntPtr jpc;        /* list of pending jumps to `pc' */
+	IntPtr    jpc;        /* list of pending jumps to `pc' */
 	int       nk;         /* number of elements in `k' */
 	int       np;         /* number of elements in `p' */
 	int       firstlocal; /* index of first local var (in Dyndata array) */
@@ -89,7 +89,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	// =============================================================
 
 	/* check for repeated labels on the same block */
-	void checkrepeated(org.luaj.vm2.compiler.LexState.Labeldesc[] ll, int ll_n, LuaString label) {
+	void checkrepeated(LexState.Labeldesc[] ll, int ll_n, LuaString label) {
 		int i;
 		for (i = bl.firstlabel; i < ll_n; i++) {
 			if (label.eq_b(ll[i].name)) {
@@ -136,7 +136,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 		checklimit(nups+1, LUAI_MAXUPVAL, "upvalues");
 		if (f.upvalues == null || nups+1 > f.upvalues.length)
 			f.upvalues = realloc(f.upvalues, nups > 0? nups*2: 1);
-		f.upvalues[nups] = new Upvaldesc(name, v.k == org.luaj.vm2.compiler.LexState.VLOCAL, v.u.info);
+		f.upvalues[nups] = new Upvaldesc(name, v.k == LexState.VLOCAL, v.u.info);
 		return nups++;
 	}
 
@@ -158,23 +158,23 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 
 	static int singlevaraux(FuncState fs, LuaString n, expdesc var, int base) {
 		if (fs == null) /* no more levels? */
-			return org.luaj.vm2.compiler.LexState.VVOID; /* default is global */
+			return LexState.VVOID; /* default is global */
 		int v = fs.searchvar(n); /* look up at current level */
 		if (v >= 0) {
-			var.init(org.luaj.vm2.compiler.LexState.VLOCAL, v);
+			var.init(LexState.VLOCAL, v);
 			if (base == 0)
 				fs.markupval(v); /* local will be used as an upval */
-			return org.luaj.vm2.compiler.LexState.VLOCAL;
+			return LexState.VLOCAL;
 		} else { /* not found at current level; try upvalues */
 			int idx = fs.searchupvalue(n); /* try existing upvalues */
 			if (idx < 0) { /* not found? */
-				if (singlevaraux(fs.prev, n, var, 0) == org.luaj.vm2.compiler.LexState.VVOID) /* try upper levels */
-					return org.luaj.vm2.compiler.LexState.VVOID; /* not found; is a global */
+				if (singlevaraux(fs.prev, n, var, 0) == LexState.VVOID) /* try upper levels */
+					return LexState.VVOID; /* not found; is a global */
 				/* else was LOCAL or UPVAL */
 				idx = fs.newupvalue(n, var); /* will be a new upvalue */
 			}
-			var.init(org.luaj.vm2.compiler.LexState.VUPVAL, idx);
-			return org.luaj.vm2.compiler.LexState.VUPVAL;
+			var.init(LexState.VUPVAL, idx);
+			return LexState.VUPVAL;
 		}
 	}
 
@@ -186,11 +186,11 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	*/
 	void movegotosout(BlockCnt bl) {
 		int i = bl.firstgoto;
-		final org.luaj.vm2.compiler.LexState.Labeldesc[] gl = ls.dyd.gt;
+		final LexState.Labeldesc[] gl = ls.dyd.gt;
 		/* correct pending gotos to current block and try to close it
 		   with visible labels */
 		while ( i < ls.dyd.n_gt ) {
-			org.luaj.vm2.compiler.LexState.Labeldesc gt = gl[i];
+			LexState.Labeldesc gt = gl[i];
 			if (gt.nactvar > bl.nactvar) {
 				if (bl.upval)
 					patchclose(gt.pc, bl.nactvar);
@@ -234,10 +234,10 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	}
 
 	void closelistfield(ConsControl cc) {
-		if (cc.v.k == org.luaj.vm2.compiler.LexState.VVOID)
+		if (cc.v.k == LexState.VVOID)
 			return; /* there is no list item */
 		this.exp2nextreg(cc.v);
-		cc.v.k = org.luaj.vm2.compiler.LexState.VVOID;
+		cc.v.k = LexState.VVOID;
 		if (cc.tostore == LFIELDS_PER_FLUSH) {
 			this.setlist(cc.t.u.info, cc.na, cc.tostore); /* flush */
 			cc.tostore = 0; /* no more items pending */
@@ -245,7 +245,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	}
 
 	boolean hasmultret(int k) {
-		return k == org.luaj.vm2.compiler.LexState.VCALL || k == org.luaj.vm2.compiler.LexState.VVARARG;
+		return k == LexState.VCALL || k == LexState.VVARARG;
 	}
 
 	void lastlistfield(ConsControl cc) {
@@ -259,7 +259,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 						 * elements)
 						 */
 		} else {
-			if (cc.v.k != org.luaj.vm2.compiler.LexState.VVOID)
+			if (cc.v.k != LexState.VVOID)
 				this.exp2nextreg(cc.v);
 			this.setlist(cc.t.u.info, cc.na, cc.tostore);
 		}
@@ -293,8 +293,8 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 
 	int jump() {
 		int jpc = this.jpc.i; /* save list of jumps to here */
-		this.jpc.i = org.luaj.vm2.compiler.LexState.NO_JUMP;
-		IntPtr j = new IntPtr(this.codeAsBx(OP_JMP, 0, org.luaj.vm2.compiler.LexState.NO_JUMP));
+		this.jpc.i = LexState.NO_JUMP;
+		IntPtr j = new IntPtr(this.codeAsBx(OP_JMP, 0, LexState.NO_JUMP));
 		this.concat(j, jpc); /* keep them on hold */
 		return j.i;
 	}
@@ -311,7 +311,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	void fixjump(int pc, int dest) {
 		InstructionPtr jmp = new InstructionPtr(this.f.code, pc);
 		int offset = dest-(pc+1);
-		_assert(dest != org.luaj.vm2.compiler.LexState.NO_JUMP);
+		_assert(dest != LexState.NO_JUMP);
 		if (Math.abs(offset) > MAXARG_sBx)
 			ls.syntaxerror("control structure too long");
 		SETARG_sBx(jmp, offset);
@@ -329,9 +329,9 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	int getjump(int pc) {
 		int offset = GETARG_sBx(this.f.code[pc]);
 		/* point to itself represents end of list */
-		if (offset == org.luaj.vm2.compiler.LexState.NO_JUMP)
+		if (offset == LexState.NO_JUMP)
 			/* end of list */
-			return org.luaj.vm2.compiler.LexState.NO_JUMP;
+			return LexState.NO_JUMP;
 		else
 			/* turn offset into absolute position */
 			return pc+1+offset;
@@ -350,7 +350,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	 * produce an inverted value)
 	 */
 	boolean need_value(int list) {
-		for (; list != org.luaj.vm2.compiler.LexState.NO_JUMP; list = this.getjump(list)) {
+		for (; list != LexState.NO_JUMP; list = this.getjump(list)) {
 			int i = this.getjumpcontrol(list).get();
 			if (GET_OPCODE(i) != OP_TESTSET)
 				return true;
@@ -373,12 +373,12 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	}
 
 	void removevalues(int list) {
-		for (; list != org.luaj.vm2.compiler.LexState.NO_JUMP; list = this.getjump(list))
+		for (; list != LexState.NO_JUMP; list = this.getjump(list))
 			this.patchtestreg(list, NO_REG);
 	}
 
 	void patchlistaux(int list, int vtarget, int reg, int dtarget) {
-		while ( list != org.luaj.vm2.compiler.LexState.NO_JUMP ) {
+		while ( list != LexState.NO_JUMP ) {
 			int next = this.getjump(list);
 			if (this.patchtestreg(list, reg))
 				this.fixjump(list, vtarget);
@@ -390,7 +390,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 
 	void dischargejpc() {
 		this.patchlistaux(this.jpc.i, this.pc, NO_REG, this.pc);
-		this.jpc.i = org.luaj.vm2.compiler.LexState.NO_JUMP;
+		this.jpc.i = LexState.NO_JUMP;
 	}
 
 	void patchlist(int list, int target) {
@@ -404,7 +404,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 
 	void patchclose(int list, int level) {
 		level++; /* argument is +1 to reserve 0 as non-op */
-		while ( list != org.luaj.vm2.compiler.LexState.NO_JUMP ) {
+		while ( list != LexState.NO_JUMP ) {
 			int next = getjump(list);
 			_assert(
 				GET_OPCODE(f.code[list]) == OP_JMP && (GETARG_A(f.code[list]) == 0 || GETARG_A(f.code[list]) >= level));
@@ -419,14 +419,14 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	}
 
 	void concat(IntPtr l1, int l2) {
-		if (l2 == org.luaj.vm2.compiler.LexState.NO_JUMP)
+		if (l2 == LexState.NO_JUMP)
 			return;
-		if (l1.i == org.luaj.vm2.compiler.LexState.NO_JUMP)
+		if (l1.i == LexState.NO_JUMP)
 			l1.i = l2;
 		else {
 			int list = l1.i;
 			int next;
-			while ( (next = this.getjump(list)) != org.luaj.vm2.compiler.LexState.NO_JUMP )
+			while ( (next = this.getjump(list)) != LexState.NO_JUMP )
 				/* find last element */
 				list = next;
 			this.fixjump(list, l2);
@@ -455,7 +455,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	}
 
 	void freeexp(expdesc e) {
-		if (e.k == org.luaj.vm2.compiler.LexState.VNONRELOC)
+		if (e.k == LexState.VNONRELOC)
 			this.freereg(e.u.info);
 	}
 
@@ -497,9 +497,9 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	}
 
 	void setreturns(expdesc e, int nresults) {
-		if (e.k == org.luaj.vm2.compiler.LexState.VCALL) { /* expression is an open function call? */
+		if (e.k == LexState.VCALL) { /* expression is an open function call? */
 			SETARG_C(this.getcodePtr(e), nresults+1);
-		} else if (e.k == org.luaj.vm2.compiler.LexState.VVARARG) {
+		} else if (e.k == LexState.VVARARG) {
 			SETARG_B(this.getcodePtr(e), nresults+1);
 			SETARG_A(this.getcodePtr(e), this.freereg);
 			this.reserveregs(1);
@@ -507,39 +507,39 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	}
 
 	void setoneret(expdesc e) {
-		if (e.k == org.luaj.vm2.compiler.LexState.VCALL) { /* expression is an open function call? */
-			e.k = org.luaj.vm2.compiler.LexState.VNONRELOC;
+		if (e.k == LexState.VCALL) { /* expression is an open function call? */
+			e.k = LexState.VNONRELOC;
 			e.u.info = GETARG_A(this.getcode(e));
-		} else if (e.k == org.luaj.vm2.compiler.LexState.VVARARG) {
+		} else if (e.k == LexState.VVARARG) {
 			SETARG_B(this.getcodePtr(e), 2);
-			e.k = org.luaj.vm2.compiler.LexState.VRELOCABLE; /* can relocate its simple result */
+			e.k = LexState.VRELOCABLE; /* can relocate its simple result */
 		}
 	}
 
 	void dischargevars(expdesc e) {
 		switch (e.k) {
-		case org.luaj.vm2.compiler.LexState.VLOCAL: {
-			e.k = org.luaj.vm2.compiler.LexState.VNONRELOC;
+		case LexState.VLOCAL: {
+			e.k = LexState.VNONRELOC;
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VUPVAL: {
+		case LexState.VUPVAL: {
 			e.u.info = this.codeABC(OP_GETUPVAL, 0, e.u.info, 0);
-			e.k = org.luaj.vm2.compiler.LexState.VRELOCABLE;
+			e.k = LexState.VRELOCABLE;
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VINDEXED: {
+		case LexState.VINDEXED: {
 			int op = OP_GETTABUP; /* assume 't' is in an upvalue */
 			this.freereg(e.u.ind_idx);
-			if (e.u.ind_vt == org.luaj.vm2.compiler.LexState.VLOCAL) { /* 't' is in a register? */
+			if (e.u.ind_vt == LexState.VLOCAL) { /* 't' is in a register? */
 				this.freereg(e.u.ind_t);
 				op = OP_GETTABLE;
 			}
 			e.u.info = this.codeABC(op, 0, e.u.ind_t, e.u.ind_idx);
-			e.k = org.luaj.vm2.compiler.LexState.VRELOCABLE;
+			e.k = LexState.VRELOCABLE;
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VVARARG:
-		case org.luaj.vm2.compiler.LexState.VCALL: {
+		case LexState.VVARARG:
+		case LexState.VCALL: {
 			this.setoneret(e);
 			break;
 		}
@@ -556,44 +556,44 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	void discharge2reg(expdesc e, int reg) {
 		this.dischargevars(e);
 		switch (e.k) {
-		case org.luaj.vm2.compiler.LexState.VNIL: {
+		case LexState.VNIL: {
 			this.nil(reg, 1);
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VFALSE:
-		case org.luaj.vm2.compiler.LexState.VTRUE: {
-			this.codeABC(OP_LOADBOOL, reg, e.k == org.luaj.vm2.compiler.LexState.VTRUE? 1: 0, 0);
+		case LexState.VFALSE:
+		case LexState.VTRUE: {
+			this.codeABC(OP_LOADBOOL, reg, e.k == LexState.VTRUE? 1: 0, 0);
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VK: {
+		case LexState.VK: {
 			this.codeK(reg, e.u.info);
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VKNUM: {
+		case LexState.VKNUM: {
 			this.codeK(reg, this.numberK(e.u.nval()));
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VRELOCABLE: {
+		case LexState.VRELOCABLE: {
 			InstructionPtr pc = this.getcodePtr(e);
 			SETARG_A(pc, reg);
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VNONRELOC: {
+		case LexState.VNONRELOC: {
 			if (reg != e.u.info)
 				this.codeABC(OP_MOVE, reg, e.u.info, 0);
 			break;
 		}
 		default: {
-			_assert(e.k == org.luaj.vm2.compiler.LexState.VVOID || e.k == org.luaj.vm2.compiler.LexState.VJMP);
+			_assert(e.k == LexState.VVOID || e.k == LexState.VJMP);
 			return; /* nothing to do... */
 		}
 		}
 		e.u.info = reg;
-		e.k = org.luaj.vm2.compiler.LexState.VNONRELOC;
+		e.k = LexState.VNONRELOC;
 	}
 
 	void discharge2anyreg(expdesc e) {
-		if (e.k != org.luaj.vm2.compiler.LexState.VNONRELOC) {
+		if (e.k != LexState.VNONRELOC) {
 			this.reserveregs(1);
 			this.discharge2reg(e, this.freereg-1);
 		}
@@ -601,14 +601,14 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 
 	void exp2reg(expdesc e, int reg) {
 		this.discharge2reg(e, reg);
-		if (e.k == org.luaj.vm2.compiler.LexState.VJMP)
+		if (e.k == LexState.VJMP)
 			this.concat(e.t, e.u.info); /* put this jump in `t' list */
 		if (e.hasjumps()) {
 			int _final; /* position after whole expression */
-			int p_f = org.luaj.vm2.compiler.LexState.NO_JUMP; /* position of an eventual LOAD false */
-			int p_t = org.luaj.vm2.compiler.LexState.NO_JUMP; /* position of an eventual LOAD true */
+			int p_f = LexState.NO_JUMP; /* position of an eventual LOAD false */
+			int p_t = LexState.NO_JUMP; /* position of an eventual LOAD true */
 			if (this.need_value(e.t.i) || this.need_value(e.f.i)) {
-				int fj = e.k == org.luaj.vm2.compiler.LexState.VJMP? org.luaj.vm2.compiler.LexState.NO_JUMP: this.jump();
+				int fj = e.k == LexState.VJMP? LexState.NO_JUMP: this.jump();
 				p_f = this.code_label(reg, 0, 1);
 				p_t = this.code_label(reg, 1, 0);
 				this.patchtohere(fj);
@@ -617,9 +617,9 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 			this.patchlistaux(e.f.i, _final, reg, p_f);
 			this.patchlistaux(e.t.i, _final, reg, p_t);
 		}
-		e.f.i = e.t.i = org.luaj.vm2.compiler.LexState.NO_JUMP;
+		e.f.i = e.t.i = LexState.NO_JUMP;
 		e.u.info = reg;
-		e.k = org.luaj.vm2.compiler.LexState.VNONRELOC;
+		e.k = LexState.VNONRELOC;
 	}
 
 	void exp2nextreg(expdesc e) {
@@ -631,7 +631,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 
 	int exp2anyreg(expdesc e) {
 		this.dischargevars(e);
-		if (e.k == org.luaj.vm2.compiler.LexState.VNONRELOC) {
+		if (e.k == LexState.VNONRELOC) {
 			if (!e.hasjumps())
 				return e.u.info; /* exp is already in a register */
 			if (e.u.info >= this.nactvar) { /* reg. is not a local? */
@@ -644,7 +644,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	}
 
 	void exp2anyregup(expdesc e) {
-		if (e.k != org.luaj.vm2.compiler.LexState.VUPVAL || e.hasjumps())
+		if (e.k != LexState.VUPVAL || e.hasjumps())
 			exp2anyreg(e);
 	}
 
@@ -658,22 +658,22 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	int exp2RK(expdesc e) {
 		this.exp2val(e);
 		switch (e.k) {
-		case org.luaj.vm2.compiler.LexState.VTRUE:
-		case org.luaj.vm2.compiler.LexState.VFALSE:
-		case org.luaj.vm2.compiler.LexState.VNIL: {
+		case LexState.VTRUE:
+		case LexState.VFALSE:
+		case LexState.VNIL: {
 			if (this.nk <= MAXINDEXRK) { /* constant fit in RK operand? */
-				e.u.info = e.k == org.luaj.vm2.compiler.LexState.VNIL? this.nilK(): this.boolK(e.k == org.luaj.vm2.compiler.LexState.VTRUE);
-				e.k = org.luaj.vm2.compiler.LexState.VK;
+				e.u.info = e.k == LexState.VNIL? this.nilK(): this.boolK(e.k == LexState.VTRUE);
+				e.k = LexState.VK;
 				return RKASK(e.u.info);
 			} else
 				break;
 		}
-		case org.luaj.vm2.compiler.LexState.VKNUM: {
+		case LexState.VKNUM: {
 			e.u.info = this.numberK(e.u.nval());
-			e.k = org.luaj.vm2.compiler.LexState.VK;
+			e.k = LexState.VK;
 			/* go through */
 		}
-		case org.luaj.vm2.compiler.LexState.VK: {
+		case LexState.VK: {
 			if (e.u.info <= MAXINDEXRK) /* constant fit in argC? */
 				return RKASK(e.u.info);
 			else
@@ -688,18 +688,18 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 
 	void storevar(expdesc var, expdesc ex) {
 		switch (var.k) {
-		case org.luaj.vm2.compiler.LexState.VLOCAL: {
+		case LexState.VLOCAL: {
 			this.freeexp(ex);
 			this.exp2reg(ex, var.u.info);
 			return;
 		}
-		case org.luaj.vm2.compiler.LexState.VUPVAL: {
+		case LexState.VUPVAL: {
 			int e = this.exp2anyreg(ex);
 			this.codeABC(OP_SETUPVAL, e, var.u.info, 0);
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VINDEXED: {
-			int op = var.u.ind_vt == org.luaj.vm2.compiler.LexState.VLOCAL? OP_SETTABLE: OP_SETTABUP;
+		case LexState.VINDEXED: {
+			int op = var.u.ind_vt == LexState.VLOCAL? OP_SETTABLE: OP_SETTABUP;
 			int e = this.exp2RK(ex);
 			this.codeABC(op, var.u.ind_t, var.u.ind_idx, e);
 			break;
@@ -721,7 +721,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 		this.codeABC(OP_SELF, func, e.u.info, this.exp2RK(key));
 		this.freeexp(key);
 		e.u.info = func;
-		e.k = org.luaj.vm2.compiler.LexState.VNONRELOC;
+		e.k = LexState.VNONRELOC;
 	}
 
 	void invertjump(expdesc e) {
@@ -735,7 +735,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	}
 
 	int jumponcond(expdesc e, int cond) {
-		if (e.k == org.luaj.vm2.compiler.LexState.VRELOCABLE) {
+		if (e.k == LexState.VRELOCABLE) {
 			int ie = this.getcode(e);
 			if (GET_OPCODE(ie) == OP_NOT) {
 				this.pc--; /* remove previous OP_NOT */
@@ -752,15 +752,15 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 		int pc; /* pc of last jump */
 		this.dischargevars(e);
 		switch (e.k) {
-		case org.luaj.vm2.compiler.LexState.VJMP: {
+		case LexState.VJMP: {
 			this.invertjump(e);
 			pc = e.u.info;
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VK:
-		case org.luaj.vm2.compiler.LexState.VKNUM:
-		case org.luaj.vm2.compiler.LexState.VTRUE: {
-			pc = org.luaj.vm2.compiler.LexState.NO_JUMP; /* always true; do nothing */
+		case LexState.VK:
+		case LexState.VKNUM:
+		case LexState.VTRUE: {
+			pc = LexState.NO_JUMP; /* always true; do nothing */
 			break;
 		}
 		default: {
@@ -770,20 +770,20 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 		}
 		this.concat(e.f, pc); /* insert last jump in `f' list */
 		this.patchtohere(e.t.i);
-		e.t.i = org.luaj.vm2.compiler.LexState.NO_JUMP;
+		e.t.i = LexState.NO_JUMP;
 	}
 
 	void goiffalse(expdesc e) {
 		int pc; /* pc of last jump */
 		this.dischargevars(e);
 		switch (e.k) {
-		case org.luaj.vm2.compiler.LexState.VJMP: {
+		case LexState.VJMP: {
 			pc = e.u.info;
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VNIL:
-		case org.luaj.vm2.compiler.LexState.VFALSE: {
-			pc = org.luaj.vm2.compiler.LexState.NO_JUMP; /* always false; do nothing */
+		case LexState.VNIL:
+		case LexState.VFALSE: {
+			pc = LexState.NO_JUMP; /* always false; do nothing */
 			break;
 		}
 		default: {
@@ -793,33 +793,33 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 		}
 		this.concat(e.t, pc); /* insert last jump in `t' list */
 		this.patchtohere(e.f.i);
-		e.f.i = org.luaj.vm2.compiler.LexState.NO_JUMP;
+		e.f.i = LexState.NO_JUMP;
 	}
 
 	void codenot(expdesc e) {
 		this.dischargevars(e);
 		switch (e.k) {
-		case org.luaj.vm2.compiler.LexState.VNIL:
-		case org.luaj.vm2.compiler.LexState.VFALSE: {
-			e.k = org.luaj.vm2.compiler.LexState.VTRUE;
+		case LexState.VNIL:
+		case LexState.VFALSE: {
+			e.k = LexState.VTRUE;
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VK:
-		case org.luaj.vm2.compiler.LexState.VKNUM:
-		case org.luaj.vm2.compiler.LexState.VTRUE: {
-			e.k = org.luaj.vm2.compiler.LexState.VFALSE;
+		case LexState.VK:
+		case LexState.VKNUM:
+		case LexState.VTRUE: {
+			e.k = LexState.VFALSE;
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VJMP: {
+		case LexState.VJMP: {
 			this.invertjump(e);
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.VRELOCABLE:
-		case org.luaj.vm2.compiler.LexState.VNONRELOC: {
+		case LexState.VRELOCABLE:
+		case LexState.VNONRELOC: {
 			this.discharge2anyreg(e);
 			this.freeexp(e);
 			e.u.info = this.codeABC(OP_NOT, 0, e.u.info, 0);
-			e.k = org.luaj.vm2.compiler.LexState.VRELOCABLE;
+			e.k = LexState.VRELOCABLE;
 			break;
 		}
 		default: {
@@ -838,15 +838,15 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 	}
 
 	static boolean vkisinreg(int k) {
-		return k == org.luaj.vm2.compiler.LexState.VNONRELOC || k == org.luaj.vm2.compiler.LexState.VLOCAL;
+		return k == LexState.VNONRELOC || k == LexState.VLOCAL;
 	}
 
 	void indexed(expdesc t, expdesc k) {
 		t.u.ind_t = (short) t.u.info;
 		t.u.ind_idx = (short) this.exp2RK(k);
-		org.luaj.vm2.compiler.Constants._assert(t.k == org.luaj.vm2.compiler.LexState.VUPVAL || vkisinreg(t.k));
-		t.u.ind_vt = (short) (t.k == org.luaj.vm2.compiler.LexState.VUPVAL? org.luaj.vm2.compiler.LexState.VUPVAL: org.luaj.vm2.compiler.LexState.VLOCAL);
-		t.k = org.luaj.vm2.compiler.LexState.VINDEXED;
+		Constants._assert(t.k == LexState.VUPVAL || vkisinreg(t.k));
+		t.u.ind_vt = (short) (t.k == LexState.VUPVAL? LexState.VUPVAL: LexState.VLOCAL);
+		t.k = LexState.VINDEXED;
 	}
 
 	boolean constfolding(int op, expdesc e1, expdesc e2) {
@@ -907,7 +907,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 				this.freeexp(e1);
 			}
 			e1.u.info = this.codeABC(op, 0, o1, o2);
-			e1.k = org.luaj.vm2.compiler.LexState.VRELOCABLE;
+			e1.k = LexState.VRELOCABLE;
 			fixline(line);
 		}
 	}
@@ -925,14 +925,14 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 			cond = 1;
 		}
 		e1.u.info = this.condjump(op, cond, o1, o2);
-		e1.k = org.luaj.vm2.compiler.LexState.VJMP;
+		e1.k = LexState.VJMP;
 	}
 
 	void prefix(int /* UnOpr */ op, expdesc e, int line) {
 		expdesc e2 = new expdesc();
-		e2.init(org.luaj.vm2.compiler.LexState.VKNUM, 0);
+		e2.init(LexState.VKNUM, 0);
 		switch (op) {
-		case org.luaj.vm2.compiler.LexState.OPR_MINUS: {
+		case LexState.OPR_MINUS: {
 			if (e.isnumeral()) /* minus constant? */
 				e.u.setNval(e.u.nval().neg()); /* fold it */
 			else {
@@ -941,10 +941,10 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 			}
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.OPR_NOT:
+		case LexState.OPR_NOT:
 			this.codenot(e);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_LEN: {
+		case LexState.OPR_LEN: {
 			this.exp2anyreg(e); /* cannot operate on constants */
 			this.codearith(OP_LEN, e, e2, line);
 			break;
@@ -956,24 +956,24 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 
 	void infix(int /* BinOpr */ op, expdesc v) {
 		switch (op) {
-		case org.luaj.vm2.compiler.LexState.OPR_AND: {
+		case LexState.OPR_AND: {
 			this.goiftrue(v);
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.OPR_OR: {
+		case LexState.OPR_OR: {
 			this.goiffalse(v);
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.OPR_CONCAT: {
+		case LexState.OPR_CONCAT: {
 			this.exp2nextreg(v); /* operand must be on the `stack' */
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.OPR_ADD:
-		case org.luaj.vm2.compiler.LexState.OPR_SUB:
-		case org.luaj.vm2.compiler.LexState.OPR_MUL:
-		case org.luaj.vm2.compiler.LexState.OPR_DIV:
-		case org.luaj.vm2.compiler.LexState.OPR_MOD:
-		case org.luaj.vm2.compiler.LexState.OPR_POW: {
+		case LexState.OPR_ADD:
+		case LexState.OPR_SUB:
+		case LexState.OPR_MUL:
+		case LexState.OPR_DIV:
+		case LexState.OPR_MOD:
+		case LexState.OPR_POW: {
 			if (!v.isnumeral())
 				this.exp2RK(v);
 			break;
@@ -987,29 +987,29 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 
 	void posfix(int op, expdesc e1, expdesc e2, int line) {
 		switch (op) {
-		case org.luaj.vm2.compiler.LexState.OPR_AND: {
-			_assert(e1.t.i == org.luaj.vm2.compiler.LexState.NO_JUMP); /* list must be closed */
+		case LexState.OPR_AND: {
+			_assert(e1.t.i == LexState.NO_JUMP); /* list must be closed */
 			this.dischargevars(e2);
 			this.concat(e2.f, e1.f.i);
 			// *e1 = *e2;
 			e1.setvalue(e2);
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.OPR_OR: {
-			_assert(e1.f.i == org.luaj.vm2.compiler.LexState.NO_JUMP); /* list must be closed */
+		case LexState.OPR_OR: {
+			_assert(e1.f.i == LexState.NO_JUMP); /* list must be closed */
 			this.dischargevars(e2);
 			this.concat(e2.t, e1.t.i);
 			// *e1 = *e2;
 			e1.setvalue(e2);
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.OPR_CONCAT: {
+		case LexState.OPR_CONCAT: {
 			this.exp2val(e2);
-			if (e2.k == org.luaj.vm2.compiler.LexState.VRELOCABLE && GET_OPCODE(this.getcode(e2)) == OP_CONCAT) {
+			if (e2.k == LexState.VRELOCABLE && GET_OPCODE(this.getcode(e2)) == OP_CONCAT) {
 				_assert(e1.u.info == GETARG_B(this.getcode(e2))-1);
 				this.freeexp(e1);
 				SETARG_B(this.getcodePtr(e2), e1.u.info);
-				e1.k = org.luaj.vm2.compiler.LexState.VRELOCABLE;
+				e1.k = LexState.VRELOCABLE;
 				e1.u.info = e2.u.info;
 			} else {
 				this.exp2nextreg(e2); /* operand must be on the 'stack' */
@@ -1017,37 +1017,37 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 			}
 			break;
 		}
-		case org.luaj.vm2.compiler.LexState.OPR_ADD:
+		case LexState.OPR_ADD:
 			this.codearith(OP_ADD, e1, e2, line);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_SUB:
+		case LexState.OPR_SUB:
 			this.codearith(OP_SUB, e1, e2, line);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_MUL:
+		case LexState.OPR_MUL:
 			this.codearith(OP_MUL, e1, e2, line);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_DIV:
+		case LexState.OPR_DIV:
 			this.codearith(OP_DIV, e1, e2, line);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_MOD:
+		case LexState.OPR_MOD:
 			this.codearith(OP_MOD, e1, e2, line);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_POW:
+		case LexState.OPR_POW:
 			this.codearith(OP_POW, e1, e2, line);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_EQ:
+		case LexState.OPR_EQ:
 			this.codecomp(OP_EQ, 1, e1, e2);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_NE:
+		case LexState.OPR_NE:
 			this.codecomp(OP_EQ, 0, e1, e2);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_LT:
+		case LexState.OPR_LT:
 			this.codecomp(OP_LT, 1, e1, e2);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_LE:
+		case LexState.OPR_LE:
 			this.codecomp(OP_LE, 1, e1, e2);
 			break;
-		case org.luaj.vm2.compiler.LexState.OPR_GT:
+		case LexState.OPR_GT:
 			this.codecomp(OP_LT, 0, e1, e2);
 			break;
 		case LexState.OPR_GE:
@@ -1067,7 +1067,7 @@ public class FuncState extends org.luaj.vm2.compiler.Constants {
 		this.dischargejpc(); /* `pc' will change */
 		/* put new instruction in code array */
 		if (f.code == null || this.pc+1 > f.code.length)
-			f.code = org.luaj.vm2.compiler.Constants.realloc(f.code, this.pc*2+1);
+			f.code = Constants.realloc(f.code, this.pc*2+1);
 		f.code[this.pc] = instruction;
 		/* save corresponding line information */
 		if (f.lineinfo == null || this.pc+1 > f.lineinfo.length)

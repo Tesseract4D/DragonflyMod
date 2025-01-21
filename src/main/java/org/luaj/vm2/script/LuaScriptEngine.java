@@ -55,7 +55,7 @@ import org.luaj.vm2.lib.jse.CoerceJavaToLua;
  * <p>
  * This engine requires the types of the Bindings and ScriptContext to be
  * compatible with the engine. For creating new client context use
- * ScriptEngine.createContext() which will return {@link org.luaj.vm2.script.LuajContext}, and for
+ * ScriptEngine.createContext() which will return {@link LuajContext}, and for
  * client bindings use the default engine scoped bindings or construct a
  * {@link LuajBindings} directly.
  */
@@ -71,11 +71,11 @@ public class LuaScriptEngine extends AbstractScriptEngine implements ScriptEngin
 
 	private static final ScriptEngineFactory myFactory = new LuaScriptEngineFactory();
 
-	private final org.luaj.vm2.script.LuajContext context;
+	private final LuajContext context;
 
 	public LuaScriptEngine() {
 		// set up context
-		context = new org.luaj.vm2.script.LuajContext();
+		context = new LuajContext();
 		context.setBindings(createBindings(), ScriptContext.ENGINE_SCOPE);
 		setContext(context);
 
@@ -162,7 +162,7 @@ public class LuaScriptEngine extends AbstractScriptEngine implements ScriptEngin
 
 		@Override
 		public Object eval(Bindings bindings) throws ScriptException {
-			return eval(((org.luaj.vm2.script.LuajContext) getContext()).globals, bindings);
+			return eval(((LuajContext) getContext()).globals, bindings);
 		}
 
 		@Override

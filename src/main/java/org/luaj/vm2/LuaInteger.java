@@ -24,23 +24,23 @@ package org.luaj.vm2;
 import org.luaj.vm2.lib.MathLib;
 
 /**
- * Extension of {@link org.luaj.vm2.LuaNumber} which can hold a Java int as its value.
+ * Extension of {@link LuaNumber} which can hold a Java int as its value.
  * <p>
  * These instance are not instantiated directly by clients, but indirectly via
- * the static functions {@link org.luaj.vm2.LuaValue#valueOf(int)} or
- * {@link org.luaj.vm2.LuaValue#valueOf(double)} functions. This ensures that policies
+ * the static functions {@link LuaValue#valueOf(int)} or
+ * {@link LuaValue#valueOf(double)} functions. This ensures that policies
  * regarding pooling of instances are encapsulated.
  * <p>
  * There are no API's specific to LuaInteger that are useful beyond what is
- * already exposed in {@link org.luaj.vm2.LuaValue}.
+ * already exposed in {@link LuaValue}.
  *
- * @see org.luaj.vm2.LuaValue
- * @see org.luaj.vm2.LuaNumber
- * @see org.luaj.vm2.LuaDouble
- * @see org.luaj.vm2.LuaValue#valueOf(int)
- * @see org.luaj.vm2.LuaValue#valueOf(double)
+ * @see LuaValue
+ * @see LuaNumber
+ * @see LuaDouble
+ * @see LuaValue#valueOf(int)
+ * @see LuaValue#valueOf(double)
  */
-public class LuaInteger extends org.luaj.vm2.LuaNumber {
+public class LuaInteger extends LuaNumber {
 
 	private static final LuaInteger[] intValues = new LuaInteger[512];
 	static {
@@ -58,13 +58,13 @@ public class LuaInteger extends org.luaj.vm2.LuaNumber {
 	 *
 	 * @param l long value to represent.
 	 * @return LuaNumber that is eithe LuaInteger or LuaDouble representing l
-	 * @see org.luaj.vm2.LuaValue#valueOf(int)
-	 * @see org.luaj.vm2.LuaValue#valueOf(double)
+	 * @see LuaValue#valueOf(int)
+	 * @see LuaValue#valueOf(double)
 	 */
-	public static org.luaj.vm2.LuaNumber valueOf(long l) {
+	public static LuaNumber valueOf(long l) {
 		int i = (int) l;
-		return l == i? i <= 255 && i >= -256? intValues[i+256]: (org.luaj.vm2.LuaNumber) new LuaInteger(i)
-			: (org.luaj.vm2.LuaNumber) org.luaj.vm2.LuaDouble.valueOf(l);
+		return l == i? i <= 255 && i >= -256? intValues[i+256]: (LuaNumber) new LuaInteger(i)
+			: (LuaNumber) LuaDouble.valueOf(l);
 	}
 
 	/** The value being held by this instance. */
@@ -73,7 +73,7 @@ public class LuaInteger extends org.luaj.vm2.LuaNumber {
 	/**
 	 * Package protected constructor.
 	 *
-	 * @see org.luaj.vm2.LuaValue#valueOf(int)
+	 * @see LuaValue#valueOf(int)
 	 **/
 	LuaInteger(int i) {
 		this.v = i;
@@ -127,18 +127,18 @@ public class LuaInteger extends org.luaj.vm2.LuaNumber {
 	}
 
 	@Override
-	public org.luaj.vm2.LuaString strvalue() {
-		return org.luaj.vm2.LuaString.valueOf(Integer.toString(v));
+	public LuaString strvalue() {
+		return LuaString.valueOf(Integer.toString(v));
 	}
 
 	@Override
-	public org.luaj.vm2.LuaString optstring(org.luaj.vm2.LuaString defval) {
-		return org.luaj.vm2.LuaString.valueOf(Integer.toString(v));
+	public LuaString optstring(LuaString defval) {
+		return LuaString.valueOf(Integer.toString(v));
 	}
 
 	@Override
-	public org.luaj.vm2.LuaValue tostring() {
-		return org.luaj.vm2.LuaString.valueOf(Integer.toString(v));
+	public LuaValue tostring() {
+		return LuaString.valueOf(Integer.toString(v));
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class LuaInteger extends org.luaj.vm2.LuaNumber {
 
 	// unary operators
 	@Override
-	public org.luaj.vm2.LuaValue neg() { return valueOf(-(long) v); }
+	public LuaValue neg() { return valueOf(-(long) v); }
 
 	// object equality, used for key comparison
 	@Override
@@ -175,14 +175,14 @@ public class LuaInteger extends org.luaj.vm2.LuaNumber {
 
 	// equality w/ metatable processing
 	@Override
-	public org.luaj.vm2.LuaValue eq(org.luaj.vm2.LuaValue val) { return val.raweq(v)? TRUE: FALSE; }
+	public LuaValue eq(LuaValue val) { return val.raweq(v)? TRUE: FALSE; }
 
 	@Override
-	public boolean eq_b(org.luaj.vm2.LuaValue val) { return val.raweq(v); }
+	public boolean eq_b(LuaValue val) { return val.raweq(v); }
 
 	// equality w/o metatable processing
 	@Override
-	public boolean raweq(org.luaj.vm2.LuaValue val) { return val.raweq(v); }
+	public boolean raweq(LuaValue val) { return val.raweq(v); }
 
 	@Override
 	public boolean raweq(double val) { return v == val; }
@@ -192,89 +192,89 @@ public class LuaInteger extends org.luaj.vm2.LuaNumber {
 
 	// arithmetic operators
 	@Override
-	public org.luaj.vm2.LuaValue add(org.luaj.vm2.LuaValue rhs) { return rhs.add(v); }
+	public LuaValue add(LuaValue rhs) { return rhs.add(v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue add(double lhs) { return org.luaj.vm2.LuaDouble.valueOf(lhs+v); }
+	public LuaValue add(double lhs) { return LuaDouble.valueOf(lhs+v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue add(int lhs) { return LuaInteger.valueOf(lhs+(long) v); }
+	public LuaValue add(int lhs) { return LuaInteger.valueOf(lhs+(long) v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue sub(org.luaj.vm2.LuaValue rhs) { return rhs.subFrom(v); }
+	public LuaValue sub(LuaValue rhs) { return rhs.subFrom(v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue sub(double rhs) { return org.luaj.vm2.LuaDouble.valueOf(v-rhs); }
+	public LuaValue sub(double rhs) { return LuaDouble.valueOf(v-rhs); }
 
 	@Override
-	public org.luaj.vm2.LuaValue sub(int rhs) { return org.luaj.vm2.LuaValue.valueOf(v-rhs); }
+	public LuaValue sub(int rhs) { return LuaValue.valueOf(v-rhs); }
 
 	@Override
-	public org.luaj.vm2.LuaValue subFrom(double lhs) { return org.luaj.vm2.LuaDouble.valueOf(lhs-v); }
+	public LuaValue subFrom(double lhs) { return LuaDouble.valueOf(lhs-v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue subFrom(int lhs) { return LuaInteger.valueOf(lhs-(long) v); }
+	public LuaValue subFrom(int lhs) { return LuaInteger.valueOf(lhs-(long) v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue mul(org.luaj.vm2.LuaValue rhs) { return rhs.mul(v); }
+	public LuaValue mul(LuaValue rhs) { return rhs.mul(v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue mul(double lhs) { return org.luaj.vm2.LuaDouble.valueOf(lhs*v); }
+	public LuaValue mul(double lhs) { return LuaDouble.valueOf(lhs*v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue mul(int lhs) { return LuaInteger.valueOf(lhs*(long) v); }
+	public LuaValue mul(int lhs) { return LuaInteger.valueOf(lhs*(long) v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue pow(org.luaj.vm2.LuaValue rhs) { return rhs.powWith(v); }
+	public LuaValue pow(LuaValue rhs) { return rhs.powWith(v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue pow(double rhs) { return MathLib.dpow(v, rhs); }
+	public LuaValue pow(double rhs) { return MathLib.dpow(v, rhs); }
 
 	@Override
-	public org.luaj.vm2.LuaValue pow(int rhs) { return MathLib.dpow(v, rhs); }
+	public LuaValue pow(int rhs) { return MathLib.dpow(v, rhs); }
 
 	@Override
-	public org.luaj.vm2.LuaValue powWith(double lhs) { return MathLib.dpow(lhs, v); }
+	public LuaValue powWith(double lhs) { return MathLib.dpow(lhs, v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue powWith(int lhs) { return MathLib.dpow(lhs, v); }
+	public LuaValue powWith(int lhs) { return MathLib.dpow(lhs, v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue div(org.luaj.vm2.LuaValue rhs) { return rhs.divInto(v); }
+	public LuaValue div(LuaValue rhs) { return rhs.divInto(v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue div(double rhs) { return org.luaj.vm2.LuaDouble.ddiv(v, rhs); }
+	public LuaValue div(double rhs) { return LuaDouble.ddiv(v, rhs); }
 
 	@Override
-	public org.luaj.vm2.LuaValue div(int rhs) { return org.luaj.vm2.LuaDouble.ddiv(v, rhs); }
+	public LuaValue div(int rhs) { return LuaDouble.ddiv(v, rhs); }
 
 	@Override
-	public org.luaj.vm2.LuaValue divInto(double lhs) { return org.luaj.vm2.LuaDouble.ddiv(lhs, v); }
+	public LuaValue divInto(double lhs) { return LuaDouble.ddiv(lhs, v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue mod(org.luaj.vm2.LuaValue rhs) { return rhs.modFrom(v); }
+	public LuaValue mod(LuaValue rhs) { return rhs.modFrom(v); }
 
 	@Override
-	public org.luaj.vm2.LuaValue mod(double rhs) { return org.luaj.vm2.LuaDouble.dmod(v, rhs); }
+	public LuaValue mod(double rhs) { return LuaDouble.dmod(v, rhs); }
 
 	@Override
-	public org.luaj.vm2.LuaValue mod(int rhs) { return org.luaj.vm2.LuaDouble.dmod(v, rhs); }
+	public LuaValue mod(int rhs) { return LuaDouble.dmod(v, rhs); }
 
 	@Override
-	public org.luaj.vm2.LuaValue modFrom(double lhs) { return LuaDouble.dmod(lhs, v); }
+	public LuaValue modFrom(double lhs) { return LuaDouble.dmod(lhs, v); }
 
 	// relational operators
 	@Override
-	public org.luaj.vm2.LuaValue lt(org.luaj.vm2.LuaValue rhs) { return rhs instanceof org.luaj.vm2.LuaNumber ? rhs.gt_b(v)? TRUE: FALSE: super.lt(rhs); }
+	public LuaValue lt(LuaValue rhs) { return rhs instanceof LuaNumber? rhs.gt_b(v)? TRUE: FALSE: super.lt(rhs); }
 
 	@Override
-	public org.luaj.vm2.LuaValue lt(double rhs) { return v < rhs? TRUE: FALSE; }
+	public LuaValue lt(double rhs) { return v < rhs? TRUE: FALSE; }
 
 	@Override
-	public org.luaj.vm2.LuaValue lt(int rhs) { return v < rhs? TRUE: FALSE; }
+	public LuaValue lt(int rhs) { return v < rhs? TRUE: FALSE; }
 
 	@Override
-	public boolean lt_b(org.luaj.vm2.LuaValue rhs) { return rhs instanceof org.luaj.vm2.LuaNumber ? rhs.gt_b(v): super.lt_b(rhs); }
+	public boolean lt_b(LuaValue rhs) { return rhs instanceof LuaNumber? rhs.gt_b(v): super.lt_b(rhs); }
 
 	@Override
 	public boolean lt_b(int rhs) { return v < rhs; }
@@ -283,18 +283,18 @@ public class LuaInteger extends org.luaj.vm2.LuaNumber {
 	public boolean lt_b(double rhs) { return v < rhs; }
 
 	@Override
-	public org.luaj.vm2.LuaValue lteq(org.luaj.vm2.LuaValue rhs) {
-		return rhs instanceof org.luaj.vm2.LuaNumber ? rhs.gteq_b(v)? TRUE: FALSE: super.lteq(rhs);
+	public LuaValue lteq(LuaValue rhs) {
+		return rhs instanceof LuaNumber? rhs.gteq_b(v)? TRUE: FALSE: super.lteq(rhs);
 	}
 
 	@Override
-	public org.luaj.vm2.LuaValue lteq(double rhs) { return v <= rhs? TRUE: FALSE; }
+	public LuaValue lteq(double rhs) { return v <= rhs? TRUE: FALSE; }
 
 	@Override
-	public org.luaj.vm2.LuaValue lteq(int rhs) { return v <= rhs? TRUE: FALSE; }
+	public LuaValue lteq(int rhs) { return v <= rhs? TRUE: FALSE; }
 
 	@Override
-	public boolean lteq_b(org.luaj.vm2.LuaValue rhs) { return rhs instanceof org.luaj.vm2.LuaNumber ? rhs.gteq_b(v): super.lteq_b(rhs); }
+	public boolean lteq_b(LuaValue rhs) { return rhs instanceof LuaNumber? rhs.gteq_b(v): super.lteq_b(rhs); }
 
 	@Override
 	public boolean lteq_b(int rhs) { return v <= rhs; }
@@ -303,16 +303,16 @@ public class LuaInteger extends org.luaj.vm2.LuaNumber {
 	public boolean lteq_b(double rhs) { return v <= rhs; }
 
 	@Override
-	public org.luaj.vm2.LuaValue gt(org.luaj.vm2.LuaValue rhs) { return rhs instanceof org.luaj.vm2.LuaNumber ? rhs.lt_b(v)? TRUE: FALSE: super.gt(rhs); }
+	public LuaValue gt(LuaValue rhs) { return rhs instanceof LuaNumber? rhs.lt_b(v)? TRUE: FALSE: super.gt(rhs); }
 
 	@Override
-	public org.luaj.vm2.LuaValue gt(double rhs) { return v > rhs? TRUE: FALSE; }
+	public LuaValue gt(double rhs) { return v > rhs? TRUE: FALSE; }
 
 	@Override
-	public org.luaj.vm2.LuaValue gt(int rhs) { return v > rhs? TRUE: FALSE; }
+	public LuaValue gt(int rhs) { return v > rhs? TRUE: FALSE; }
 
 	@Override
-	public boolean gt_b(org.luaj.vm2.LuaValue rhs) { return rhs instanceof org.luaj.vm2.LuaNumber ? rhs.lt_b(v): super.gt_b(rhs); }
+	public boolean gt_b(LuaValue rhs) { return rhs instanceof LuaNumber? rhs.lt_b(v): super.gt_b(rhs); }
 
 	@Override
 	public boolean gt_b(int rhs) { return v > rhs; }
@@ -321,18 +321,18 @@ public class LuaInteger extends org.luaj.vm2.LuaNumber {
 	public boolean gt_b(double rhs) { return v > rhs; }
 
 	@Override
-	public org.luaj.vm2.LuaValue gteq(org.luaj.vm2.LuaValue rhs) {
-		return rhs instanceof org.luaj.vm2.LuaNumber ? rhs.lteq_b(v)? TRUE: FALSE: super.gteq(rhs);
+	public LuaValue gteq(LuaValue rhs) {
+		return rhs instanceof LuaNumber? rhs.lteq_b(v)? TRUE: FALSE: super.gteq(rhs);
 	}
 
 	@Override
-	public org.luaj.vm2.LuaValue gteq(double rhs) { return v >= rhs? TRUE: FALSE; }
+	public LuaValue gteq(double rhs) { return v >= rhs? TRUE: FALSE; }
 
 	@Override
-	public org.luaj.vm2.LuaValue gteq(int rhs) { return v >= rhs? TRUE: FALSE; }
+	public LuaValue gteq(int rhs) { return v >= rhs? TRUE: FALSE; }
 
 	@Override
-	public boolean gteq_b(LuaValue rhs) { return rhs instanceof LuaNumber ? rhs.lteq_b(v): super.gteq_b(rhs); }
+	public boolean gteq_b(LuaValue rhs) { return rhs instanceof LuaNumber? rhs.lteq_b(v): super.gteq_b(rhs); }
 
 	@Override
 	public boolean gteq_b(int rhs) { return v >= rhs; }
@@ -342,7 +342,7 @@ public class LuaInteger extends org.luaj.vm2.LuaNumber {
 
 	// string comparison
 	@Override
-	public int strcmp(org.luaj.vm2.LuaString rhs) { typerror("attempt to compare number with string"); return 0; }
+	public int strcmp(LuaString rhs) { typerror("attempt to compare number with string"); return 0; }
 
 	@Override
 	public int checkint() {

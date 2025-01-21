@@ -29,7 +29,6 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.LibFunction;
 import org.luaj.vm2.lib.OsLib;
-import org.luaj.vm2.lib.jse.JseProcess;
 
 /**
  * Subclass of {@link LibFunction} which implements the standard lua {@code os}
@@ -85,7 +84,7 @@ import org.luaj.vm2.lib.jse.JseProcess;
  * @see <a href="http://www.lua.org/manual/5.2/manual.html#6.9">Lua 5.2 OS Lib
  *      Reference</a>
  */
-public class JseOsLib extends OsLib {
+public class JseOsLib extends org.luaj.vm2.lib.OsLib {
 
 	/** return code indicating the execute() threw an I/O exception */
 	public static final int EXEC_IOEXCEPTION = 1;
@@ -144,7 +143,7 @@ public class JseOsLib extends OsLib {
 	@Override
 	protected String tmpname() {
 		try {
-			File f = File.createTempFile(TMP_PREFIX, TMP_SUFFIX);
+			java.io.File f = java.io.File.createTempFile(TMP_PREFIX, TMP_SUFFIX);
 			return f.getAbsolutePath();
 		} catch (IOException ioe) {
 			return super.tmpname();

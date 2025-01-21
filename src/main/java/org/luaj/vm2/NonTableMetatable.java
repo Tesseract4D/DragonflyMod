@@ -1,10 +1,8 @@
 package org.luaj.vm2;
 
-import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaTable.Slot;
-import org.luaj.vm2.LuaValue;
 
-class NonTableMetatable implements org.luaj.vm2.Metatable {
+class NonTableMetatable implements Metatable {
 
 	private final LuaValue value;
 

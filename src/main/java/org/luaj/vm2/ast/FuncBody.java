@@ -21,18 +21,12 @@
 ******************************************************************************/
 package org.luaj.vm2.ast;
 
-import org.luaj.vm2.ast.Block;
-import org.luaj.vm2.ast.NameScope;
-import org.luaj.vm2.ast.ParList;
-import org.luaj.vm2.ast.SyntaxElement;
-import org.luaj.vm2.ast.Visitor;
-
 public class FuncBody extends SyntaxElement {
-	public org.luaj.vm2.ast.ParList parlist;
-	public org.luaj.vm2.ast.Block block;
+	public ParList   parlist;
+	public Block     block;
 	public NameScope scope;
 
-	public FuncBody(org.luaj.vm2.ast.ParList parlist, Block block) {
+	public FuncBody(ParList parlist, Block block) {
 		this.parlist = parlist != null? parlist: ParList.EMPTY_PARLIST;
 		this.block = block;
 	}

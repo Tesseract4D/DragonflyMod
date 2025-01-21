@@ -65,20 +65,20 @@ import java.util.Vector;
  * <li>{@link LuaValue#tableOf()} empty table</li>
  * <li>{@link LuaValue#tableOf(int, int)} table with capacity</li>
  * <li>{@link LuaValue#listOf(LuaValue[])} initialize array part</li>
- * <li>{@link LuaValue#listOf(LuaValue[], org.luaj.vm2.Varargs)} initialize array part</li>
+ * <li>{@link LuaValue#listOf(LuaValue[], Varargs)} initialize array part</li>
  * <li>{@link LuaValue#tableOf(LuaValue[])} initialize named hash part</li>
- * <li>{@link LuaValue#tableOf(org.luaj.vm2.Varargs, int)} initialize named hash part</li>
+ * <li>{@link LuaValue#tableOf(Varargs, int)} initialize named hash part</li>
  * <li>{@link LuaValue#tableOf(LuaValue[], LuaValue[])} initialize array and
  * named parts</li>
- * <li>{@link LuaValue#tableOf(LuaValue[], LuaValue[], org.luaj.vm2.Varargs)} initialize
+ * <li>{@link LuaValue#tableOf(LuaValue[], LuaValue[], Varargs)} initialize
  * array and named parts</li>
  * </ul>
  *
  * @see LuaValue
  */
-public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
+public class LuaTable extends LuaValue implements Metatable {
 	private static final int       MIN_HASH_CAPACITY = 2;
-	private static final org.luaj.vm2.LuaString N                 = valueOf("n");
+	private static final LuaString N                 = valueOf("n");
 
 	/** the array values */
 	protected LuaValue[] array;
@@ -90,7 +90,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	protected int hashEntries;
 
 	/** metatable for this table, or null */
-	protected org.luaj.vm2.Metatable m_metatable;
+	protected Metatable m_metatable;
 
 	/** Construct empty table */
 	public LuaTable() {
@@ -116,7 +116,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	 * @param unnamed Unnamed elements in order {@code value-1, value-2, ... }
 	 * @param lastarg Additional unnamed values beyond {@code unnamed.length}
 	 */
-	public LuaTable(LuaValue[] named, LuaValue[] unnamed, org.luaj.vm2.Varargs lastarg) {
+	public LuaTable(LuaValue[] named, LuaValue[] unnamed, Varargs lastarg) {
 		int nn = named != null? named.length: 0;
 		int nu = unnamed != null? unnamed.length: 0;
 		int nl = lastarg != null? lastarg.narg(): 0;
@@ -136,7 +136,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	 *
 	 * @param varargs Unnamed elements in order {@code value-1, value-2, ... }
 	 */
-	public LuaTable(org.luaj.vm2.Varargs varargs) {
+	public LuaTable(Varargs varargs) {
 		this(varargs, 1);
 	}
 
@@ -147,7 +147,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	 * @param firstarg the index in varargs of the first argument to include in
 	 *                 the table
 	 */
-	public LuaTable(org.luaj.vm2.Varargs varargs, int firstarg) {
+	public LuaTable(Varargs varargs, int firstarg) {
 		int nskip = firstarg-1;
 		int n = Math.max(varargs.narg()-nskip, 0);
 		presize(n, 1);
@@ -292,7 +292,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	@Override
 	public void set(LuaValue key, LuaValue value) {
 		if (key == null || !key.isvalidkey() && !metatag(NEWINDEX).isfunction())
-			throw new org.luaj.vm2.LuaError("value ('" + key + "') can not be used as a table index");
+			throw new LuaError("value ('" + key + "') can not be used as a table index");
 		if (m_metatable == null || !rawget(key).isnil() || !settable(this, key, value))
 			rawset(key, value);
 	}
@@ -358,12 +358,12 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	/**
 	 * Concatenate the contents of a table efficiently, using {@link Buffer}
 	 *
-	 * @param sep {@link org.luaj.vm2.LuaString} separater to apply between elements
+	 * @param sep {@link LuaString} separater to apply between elements
 	 * @param i   the first element index
 	 * @param j   the last element index, inclusive
-	 * @return {@link org.luaj.vm2.LuaString} value of the concatenation
+	 * @return {@link LuaString} value of the concatenation
 	 */
-	public LuaValue concat(org.luaj.vm2.LuaString sep, int i, int j) {
+	public LuaValue concat(LuaString sep, int i, int j) {
 		Buffer sb = new Buffer();
 		if (i <= j) {
 			sb.append(get(i).checkstring());
@@ -380,7 +380,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 		if (m_metatable != null) {
 			LuaValue len = len();
 			if (!len.isint())
-				throw new org.luaj.vm2.LuaError("table length is not an integer: " + len);
+				throw new LuaError("table length is not an integer: " + len);
 			return len.toint();
 		}
 		return rawlen();
@@ -418,7 +418,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	 * @return key,value or nil
 	 */
 	@Override
-	public org.luaj.vm2.Varargs next(LuaValue key) {
+	public Varargs next(LuaValue key) {
 		int i = 0;
 		do {
 			// find current key index
@@ -482,7 +482,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	 * @return key,value or none
 	 */
 	@Override
-	public org.luaj.vm2.Varargs inext(LuaValue key) {
+	public Varargs inext(LuaValue key) {
 		int k = key.checkint()+1;
 		LuaValue v = rawget(k);
 		return v.isnil()? NONE: varargsOf(LuaInteger.valueOf(k), v);
@@ -855,7 +855,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	 */
 	public void sort(LuaValue comparator) {
 		if (len().tolong() >= Integer.MAX_VALUE)
-			throw new org.luaj.vm2.LuaError("array too big: " + len().tolong());
+			throw new LuaError("array too big: " + len().tolong());
 		if (m_metatable != null && m_metatable.useWeakValues()) {
 			dropWeakArrayValues();
 		}
@@ -914,7 +914,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	public int keyCount() {
 		LuaValue k = LuaValue.NIL;
 		for (int i = 0; true; i++) {
-			org.luaj.vm2.Varargs n = next(k);
+			Varargs n = next(k);
 			if ((k = n.arg1()).isnil())
 				return i;
 		}
@@ -930,7 +930,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 		Vector l = new Vector();
 		LuaValue k = LuaValue.NIL;
 		while ( true ) {
-			org.luaj.vm2.Varargs n = next(k);
+			Varargs n = next(k);
 			if ((k = n.arg1()).isnil())
 				break;
 			l.addElement(k);
@@ -955,25 +955,25 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	}
 
 	/** Unpack all the elements of this table */
-	public org.luaj.vm2.Varargs unpack() {
+	public Varargs unpack() {
 		return unpack(1, this.rawlen());
 	}
 
 	/** Unpack all the elements of this table from element i */
-	public org.luaj.vm2.Varargs unpack(int i) {
+	public Varargs unpack(int i) {
 		return unpack(i, this.rawlen());
 	}
 
 	/** Unpack the elements from i to j inclusive */
-	public org.luaj.vm2.Varargs unpack(int i, int j) {
+	public Varargs unpack(int i, int j) {
 		if (j < i)
 			return NONE;
 		int count = j-i;
 		if (count < 0)
-			throw new org.luaj.vm2.LuaError("too many results to unpack: greater " + Integer.MAX_VALUE); // integer overflow
+			throw new LuaError("too many results to unpack: greater " + Integer.MAX_VALUE); // integer overflow
 		int max = 0x00ffffff;
 		if (count >= max)
-			throw new org.luaj.vm2.LuaError("too many results to unpack: " + count + " (max is " + max + ')');
+			throw new LuaError("too many results to unpack: " + count + " (max is " + max + ')');
 		int n = j+1-i;
 		switch (n) {
 		case 0:
@@ -1061,7 +1061,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 		LuaValue value();
 
 		/** Return varargsOf(key(), value()) or equivalent */
-		org.luaj.vm2.Varargs toVarargs();
+		Varargs toVarargs();
 	}
 
 	private static class LinkSlot implements StrongSlot {
@@ -1089,7 +1089,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 		}
 
 		@Override
-		public org.luaj.vm2.Varargs toVarargs() {
+		public Varargs toVarargs() {
 			return entry.toVarargs();
 		}
 
@@ -1172,7 +1172,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 	 * If the key may be an integer, the {@link #arraykey(int)} method must be
 	 * overridden to handle that case.
 	 */
-	static abstract class Entry extends org.luaj.vm2.Varargs implements StrongSlot {
+	static abstract class Entry extends Varargs implements StrongSlot {
 		@Override
 		public abstract LuaValue key();
 
@@ -1212,7 +1212,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 		 * Subclasses should redefine as "return this;" whenever possible.
 		 */
 		@Override
-		public org.luaj.vm2.Varargs toVarargs() {
+		public Varargs toVarargs() {
 			return varargsOf(key(), value());
 		}
 
@@ -1222,7 +1222,7 @@ public class LuaTable extends LuaValue implements org.luaj.vm2.Metatable {
 		}
 
 		@Override
-		public org.luaj.vm2.Varargs subargs(int start) {
+		public Varargs subargs(int start) {
 			switch (start) {
 			case 1:
 				return this;

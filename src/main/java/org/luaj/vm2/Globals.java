@@ -79,8 +79,8 @@ import org.luaj.vm2.lib.ResourceFinder;
  * <ul>
  * <li>find the resource using the platform's {@link ResourceFinder}
  * <li>compile lua to lua bytecode using {@link Compiler}
- * <li>load lua bytecode to a {@link org.luaj.vm2.Prototype} using {@link Undumper}
- * <li>construct {@link LuaClosure} from {@link org.luaj.vm2.Prototype} with {@link Globals}
+ * <li>load lua bytecode to a {@link Prototype} using {@link Undumper}
+ * <li>construct {@link LuaClosure} from {@link Prototype} with {@link Globals}
  * using {@link Loader}
  * </ul>
  * <p>
@@ -133,7 +133,7 @@ import org.luaj.vm2.lib.ResourceFinder;
  * @see org.luaj.vm2.compiler.LuaC
  * @see org.luaj.vm2.luajc.LuaJC
  */
-public class Globals extends org.luaj.vm2.LuaTable {
+public class Globals extends LuaTable {
 
 	/** The current default input stream. */
 	public InputStream STDIN = null;
@@ -150,7 +150,7 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	/**
 	 * The currently running thread. Should not be changed by non-library code.
 	 */
-	public org.luaj.vm2.LuaThread running = new org.luaj.vm2.LuaThread(this);
+	public LuaThread running = new LuaThread(this);
 
 	/** The BaseLib instance loaded into this Globals */
 	public BaseLib baselib;
@@ -173,7 +173,7 @@ public class Globals extends org.luaj.vm2.LuaTable {
 		 * Convert the prototype into a LuaFunction with the supplied
 		 * environment.
 		 */
-		LuaFunction load(org.luaj.vm2.Prototype prototype, String chunkname, LuaValue env) throws IOException;
+		LuaFunction load(Prototype prototype, String chunkname, LuaValue env) throws IOException;
 	}
 
 	/** Interface for module that converts lua source text into a prototype. */
@@ -182,13 +182,13 @@ public class Globals extends org.luaj.vm2.LuaTable {
 		 * Compile lua source into a Prototype. The InputStream is assumed to be
 		 * in UTF-8.
 		 */
-		org.luaj.vm2.Prototype compile(InputStream stream, String chunkname) throws IOException;
+		Prototype compile(InputStream stream, String chunkname) throws IOException;
 	}
 
 	/** Interface for module that loads lua binary chunk into a prototype. */
 	public interface Undumper {
 		/** Load the supplied input stream into a prototype. */
-		org.luaj.vm2.Prototype undump(InputStream stream, String chunkname) throws IOException;
+		Prototype undump(InputStream stream, String chunkname) throws IOException;
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	 *
 	 * @param filename Name of the file to load.
 	 * @return LuaValue that can be call()'ed or invoke()'ed.
-	 * @throws org.luaj.vm2.LuaError if the file could not be loaded.
+	 * @throws LuaError if the file could not be loaded.
 	 */
 	public LuaValue loadfile(String filename) {
 		try {
@@ -246,7 +246,7 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	 * @param chunkname Name that will be used within the chunk as the source.
 	 * @return LuaValue that may be executed via .call(), .invoke(), or
 	 *         .method() calls.
-	 * @throws org.luaj.vm2.LuaError if the script could not be compiled.
+	 * @throws LuaError if the script could not be compiled.
 	 */
 	public LuaValue load(String script, String chunkname) {
 		return load(new StrReader(script), chunkname);
@@ -259,7 +259,7 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	 * @param script Contents of a lua script, such as "print 'hello, world.'"
 	 * @return LuaValue that may be executed via .call(), .invoke(), or
 	 *         .method() calls.
-	 * @throws org.luaj.vm2.LuaError if the script could not be compiled.
+	 * @throws LuaError if the script could not be compiled.
 	 */
 	public LuaValue load(String script) {
 		return load(new StrReader(script), script);
@@ -276,9 +276,9 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	 *                    function.
 	 * @return LuaValue that may be executed via .call(), .invoke(), or
 	 *         .method() calls.
-	 * @throws org.luaj.vm2.LuaError if the script could not be compiled.
+	 * @throws LuaError if the script could not be compiled.
 	 */
-	public LuaValue load(String script, String chunkname, org.luaj.vm2.LuaTable environment) {
+	public LuaValue load(String script, String chunkname, LuaTable environment) {
 		return load(new StrReader(script), chunkname, environment);
 	}
 
@@ -292,7 +292,7 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	 * @param chunkname Name that will be used within the chunk as the source.
 	 * @return LuaValue that may be executed via .call(), .invoke(), or
 	 *         .method() calls.
-	 * @throws org.luaj.vm2.LuaError if the script could not be compiled.
+	 * @throws LuaError if the script could not be compiled.
 	 */
 	public LuaValue load(Reader reader, String chunkname) {
 		return load(new UTF8Stream(reader), chunkname, "t", this);
@@ -311,7 +311,7 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	 *                    function.
 	 * @return LuaValue that may be executed via .call(), .invoke(), or
 	 *         .method() calls.
-	 * @throws org.luaj.vm2.LuaError if the script could not be compiled.
+	 * @throws LuaError if the script could not be compiled.
 	 */
 	public LuaValue load(Reader reader, String chunkname, LuaTable environment) {
 		return load(new UTF8Stream(reader), chunkname, "t", environment);
@@ -329,9 +329,9 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	 */
 	public LuaValue load(InputStream is, String chunkname, String mode, LuaValue environment) {
 		try {
-			org.luaj.vm2.Prototype p = loadPrototype(is, chunkname, mode);
+			Prototype p = loadPrototype(is, chunkname, mode);
 			return loader.load(p, chunkname, environment);
-		} catch (org.luaj.vm2.LuaError l) {
+		} catch (LuaError l) {
 			throw l;
 		} catch (Exception e) {
 			return error("load " + chunkname + ": " + e);
@@ -349,14 +349,14 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	 * @param mode      String containing 'b' or 't' or both to control loading
 	 *                  as binary or text or either.
 	 */
-	public org.luaj.vm2.Prototype loadPrototype(InputStream is, String chunkname, String mode) throws IOException {
+	public Prototype loadPrototype(InputStream is, String chunkname, String mode) throws IOException {
 		if (mode.indexOf('b') >= 0) {
 			if (undumper == null)
 				error("No undumper.");
 			if (!is.markSupported())
 				is = new BufferedStream(is);
 			is.mark(4);
-			final org.luaj.vm2.Prototype p = undumper.undump(is, chunkname);
+			final Prototype p = undumper.undump(is, chunkname);
 			if (p != null)
 				return p;
 			is.reset();
@@ -374,7 +374,7 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	 * literal containing characters with codepoints 128 or above will be
 	 * converted into multiple bytes.
 	 */
-	public org.luaj.vm2.Prototype compilePrototype(Reader reader, String chunkname) throws IOException {
+	public Prototype compilePrototype(Reader reader, String chunkname) throws IOException {
 		return compilePrototype(new UTF8Stream(reader), chunkname);
 	}
 
@@ -398,7 +398,7 @@ public class Globals extends org.luaj.vm2.LuaTable {
 	 * @return Values supplied as arguments to the resume() call that
 	 *         reactivates this thread.
 	 */
-	public org.luaj.vm2.Varargs yield(Varargs args) {
+	public Varargs yield(Varargs args) {
 		if (running == null || running.isMainThread())
 			throw new LuaError("cannot yield main thread");
 		final LuaThread.State s = running.state;

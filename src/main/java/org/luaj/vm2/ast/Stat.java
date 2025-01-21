@@ -32,11 +32,11 @@ abstract public class Stat extends SyntaxElement {
 		return block;
 	}
 
-	public static Stat whiledo(org.luaj.vm2.ast.Exp exp, Block block) {
+	public static Stat whiledo(Exp exp, Block block) {
 		return new WhileDo(exp, block);
 	}
 
-	public static Stat repeatuntil(Block block, org.luaj.vm2.ast.Exp exp) {
+	public static Stat repeatuntil(Block block, Exp exp) {
 		return new RepeatUntil(block, exp);
 	}
 
@@ -44,15 +44,15 @@ abstract public class Stat extends SyntaxElement {
 		return new Break();
 	}
 
-	public static Stat returnstat(List<org.luaj.vm2.ast.Exp> exps) {
+	public static Stat returnstat(List<Exp> exps) {
 		return new Return(exps);
 	}
 
-	public static Stat assignment(List<VarExp> vars, List<org.luaj.vm2.ast.Exp> exps) {
+	public static Stat assignment(List<VarExp> vars, List<Exp> exps) {
 		return new Assign(vars, exps);
 	}
 
-	public static Stat functioncall(org.luaj.vm2.ast.Exp.FuncCall funccall) {
+	public static Stat functioncall(Exp.FuncCall funccall) {
 		return new FuncCallStat(funccall);
 	}
 
@@ -60,7 +60,7 @@ abstract public class Stat extends SyntaxElement {
 		return new LocalFuncDef(name, funcbody);
 	}
 
-	public static Stat fornumeric(String name, org.luaj.vm2.ast.Exp initial, org.luaj.vm2.ast.Exp limit, org.luaj.vm2.ast.Exp step, Block block) {
+	public static Stat fornumeric(String name, Exp initial, Exp limit, Exp step, Block block) {
 		return new NumericFor(name, initial, limit, step, block);
 	}
 
@@ -68,16 +68,16 @@ abstract public class Stat extends SyntaxElement {
 		return new FuncDef(funcname, funcbody);
 	}
 
-	public static Stat forgeneric(List<Name> names, List<org.luaj.vm2.ast.Exp> exps, Block block) {
+	public static Stat forgeneric(List<Name> names, List<Exp> exps, Block block) {
 		return new GenericFor(names, exps, block);
 	}
 
-	public static Stat localassignment(List<Name> names, List<org.luaj.vm2.ast.Exp> values) {
+	public static Stat localassignment(List<Name> names, List<Exp> values) {
 		return new LocalAssign(names, values);
 	}
 
-	public static Stat ifthenelse(org.luaj.vm2.ast.Exp ifexp, Block ifblock, List<org.luaj.vm2.ast.Exp> elseifexps, List<Block> elseifblocks,
-                                  Block elseblock) {
+	public static Stat ifthenelse(Exp ifexp, Block ifblock, List<Exp> elseifexps, List<Block> elseifblocks,
+		Block elseblock) {
 		return new IfThenElse(ifexp, ifblock, elseifexps, elseifblocks, elseblock);
 	}
 
@@ -117,9 +117,9 @@ abstract public class Stat extends SyntaxElement {
 
 	public static class Assign extends Stat {
 		public final List<VarExp> vars;
-		public final List<org.luaj.vm2.ast.Exp>    exps;
+		public final List<Exp>    exps;
 
-		public Assign(List<VarExp> vars, List<org.luaj.vm2.ast.Exp> exps) {
+		public Assign(List<VarExp> vars, List<Exp> exps) {
 			this.vars = vars;
 			this.exps = exps;
 		}
@@ -132,10 +132,10 @@ abstract public class Stat extends SyntaxElement {
 	}
 
 	public static class WhileDo extends Stat {
-		public final org.luaj.vm2.ast.Exp exp;
+		public final Exp   exp;
 		public final Block block;
 
-		public WhileDo(org.luaj.vm2.ast.Exp exp, Block block) {
+		public WhileDo(Exp exp, Block block) {
 			this.exp = exp;
 			this.block = block;
 		}
@@ -148,9 +148,9 @@ abstract public class Stat extends SyntaxElement {
 
 	public static class RepeatUntil extends Stat {
 		public final Block block;
-		public final org.luaj.vm2.ast.Exp exp;
+		public final Exp   exp;
 
-		public RepeatUntil(Block block, org.luaj.vm2.ast.Exp exp) {
+		public RepeatUntil(Block block, Exp exp) {
 			this.block = block;
 			this.exp = exp;
 		}
@@ -169,9 +169,9 @@ abstract public class Stat extends SyntaxElement {
 	}
 
 	public static class Return extends Stat {
-		public final List<org.luaj.vm2.ast.Exp> values;
+		public final List<Exp> values;
 
-		public Return(List<org.luaj.vm2.ast.Exp> values) {
+		public Return(List<Exp> values) {
 			this.values = values;
 		}
 
@@ -189,9 +189,9 @@ abstract public class Stat extends SyntaxElement {
 	}
 
 	public static class FuncCallStat extends Stat {
-		public final org.luaj.vm2.ast.Exp.FuncCall funccall;
+		public final Exp.FuncCall funccall;
 
-		public FuncCallStat(org.luaj.vm2.ast.Exp.FuncCall funccall) {
+		public FuncCallStat(Exp.FuncCall funccall) {
 			this.funccall = funccall;
 		}
 
@@ -233,11 +233,11 @@ abstract public class Stat extends SyntaxElement {
 
 	public static class GenericFor extends Stat {
 		public List<Name> names;
-		public List<org.luaj.vm2.ast.Exp>  exps;
+		public List<Exp>  exps;
 		public Block      block;
 		public NameScope  scope;
 
-		public GenericFor(List<Name> names, List<org.luaj.vm2.ast.Exp> exps, Block block) {
+		public GenericFor(List<Name> names, List<Exp> exps, Block block) {
 			this.names = names;
 			this.exps = exps;
 			this.block = block;
@@ -251,11 +251,11 @@ abstract public class Stat extends SyntaxElement {
 
 	public static class NumericFor extends Stat {
 		public final Name  name;
-		public final org.luaj.vm2.ast.Exp initial, limit, step;
+		public final Exp   initial, limit, step;
 		public final Block block;
 		public NameScope   scope;
 
-		public NumericFor(String name, org.luaj.vm2.ast.Exp initial, org.luaj.vm2.ast.Exp limit, org.luaj.vm2.ast.Exp step, Block block) {
+		public NumericFor(String name, Exp initial, Exp limit, Exp step, Block block) {
 			this.name = new Name(name);
 			this.initial = initial;
 			this.limit = limit;
@@ -271,9 +271,9 @@ abstract public class Stat extends SyntaxElement {
 
 	public static class LocalAssign extends Stat {
 		public final List<Name> names;
-		public final List<org.luaj.vm2.ast.Exp>  values;
+		public final List<Exp>  values;
 
-		public LocalAssign(List<Name> names, List<org.luaj.vm2.ast.Exp> values) {
+		public LocalAssign(List<Name> names, List<Exp> values) {
 			this.names = names;
 			this.values = values;
 		}
@@ -285,13 +285,13 @@ abstract public class Stat extends SyntaxElement {
 	}
 
 	public static class IfThenElse extends Stat {
-		public final org.luaj.vm2.ast.Exp ifexp;
+		public final Exp         ifexp;
 		public final Block       ifblock;
-		public final List<org.luaj.vm2.ast.Exp>   elseifexps;
+		public final List<Exp>   elseifexps;
 		public final List<Block> elseifblocks;
 		public final Block       elseblock;
 
-		public IfThenElse(org.luaj.vm2.ast.Exp ifexp, Block ifblock, List<Exp> elseifexps, List<Block> elseifblocks, Block elseblock) {
+		public IfThenElse(Exp ifexp, Block ifblock, List<Exp> elseifexps, List<Block> elseifblocks, Block elseblock) {
 			this.ifexp = ifexp;
 			this.ifblock = ifblock;
 			this.elseifexps = elseifexps;

@@ -64,7 +64,7 @@ import org.luaj.vm2.Varargs;
  * @see <a href="http://www.lua.org/manual/5.2/manual.html#6.7">Lua 5.2 Bitwise
  *      Operation Lib Reference</a>
  */
-public class Bit32Lib extends org.luaj.vm2.lib.TwoArgFunction {
+public class Bit32Lib extends TwoArgFunction {
 
 	public Bit32Lib() {
 	}

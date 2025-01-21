@@ -197,7 +197,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return true if argument i is boolean true, false if it is false, or
 	 *         defval if not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a lua boolean
+	 * @exception LuaError if the argument is not a lua boolean
 	 */
 	public boolean optboolean(int i, boolean defval) { return arg(i).optboolean(defval); }
 
@@ -208,7 +208,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaClosure if argument i is a closure, or defval if not supplied
 	 *         or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a lua closure
+	 * @exception LuaError if the argument is not a lua closure
 	 */
 	public LuaClosure optclosure(int i, LuaClosure defval) { return arg(i).optclosure(defval); }
 
@@ -219,7 +219,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return java double value if argument i is a number or string that
 	 *         converts to a number, or defval if not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a number
+	 * @exception LuaError if the argument is not a number
 	 */
 	public double optdouble(int i, double defval) { return arg(i).optdouble(defval); }
 
@@ -230,7 +230,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaValue that can be called if argument i is lua function or
 	 *         closure, or defval if not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a lua function or closure
+	 * @exception LuaError if the argument is not a lua function or closure
 	 */
 	public LuaFunction optfunction(int i, LuaFunction defval) { return arg(i).optfunction(defval); }
 
@@ -241,7 +241,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return int value with fraction discarded and truncated if necessary if
 	 *         argument i is number, or defval if not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a number
+	 * @exception LuaError if the argument is not a number
 	 */
 	public int optint(int i, int defval) { return arg(i).optint(defval); }
 
@@ -252,7 +252,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaInteger value that fits in a java int without rounding, or
 	 *         defval if not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument cannot be represented by a java int
+	 * @exception LuaError if the argument cannot be represented by a java int
 	 *                     value
 	 */
 	public LuaInteger optinteger(int i, LuaInteger defval) { return arg(i).optinteger(defval); }
@@ -264,7 +264,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return long value with fraction discarded and truncated if necessary if
 	 *         argument i is number, or defval if not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a number
+	 * @exception LuaError if the argument is not a number
 	 */
 	public long optlong(int i, long defval) { return arg(i).optlong(defval); }
 
@@ -275,7 +275,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument, or
 	 *          defval if not supplied or nil
 	 * @return LuaNumber if argument i is number or can be converted to a number
-	 * @exception org.luaj.vm2.LuaError if the argument is not a number
+	 * @exception LuaError if the argument is not a number
 	 */
 	public LuaNumber optnumber(int i, LuaNumber defval) { return arg(i).optnumber(defval); }
 
@@ -286,7 +286,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return String value if argument i is a string or number, or defval if
 	 *         not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a string or number
+	 * @exception LuaError if the argument is not a string or number
 	 */
 	public String optjstring(int i, String defval) { return arg(i).optjstring(defval); }
 
@@ -297,7 +297,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaString value if argument i is a string or number, or defval if
 	 *         not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a string or number
+	 * @exception LuaError if the argument is not a string or number
 	 */
 	public LuaString optstring(int i, LuaString defval) { return arg(i).optstring(defval); }
 
@@ -307,7 +307,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaTable value if a table, or defval if not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a lua table
+	 * @exception LuaError if the argument is not a lua table
 	 */
 	public LuaTable opttable(int i, LuaTable defval) { return arg(i).opttable(defval); }
 
@@ -317,7 +317,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaThread value if a thread, or defval if not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a lua thread
+	 * @exception LuaError if the argument is not a lua thread
 	 */
 	public LuaThread optthread(int i, LuaThread defval) { return arg(i).optthread(defval); }
 
@@ -328,7 +328,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return java Object value if argument i is a userdata, or defval if not
 	 *         supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a userdata
+	 * @exception LuaError if the argument is not a userdata
 	 */
 	public Object optuserdata(int i, Object defval) { return arg(i).optuserdata(defval); }
 
@@ -341,7 +341,7 @@ public abstract class Varargs {
 	 * @param c the class to which the userdata instance must be assignable
 	 * @return java Object value if argument i is a userdata whose instance
 	 *         Class c or a subclass, or defval if not supplied or nil
-	 * @exception org.luaj.vm2.LuaError if the argument is not a userdata or from whose
+	 * @exception LuaError if the argument is not a userdata or from whose
 	 *                     instance c is not assignable
 	 */
 	public Object optuserdata(int i, Class c, Object defval) { return arg(i).optuserdata(c, defval); }
@@ -351,7 +351,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaValue value if the argument exists, defval if not
-	 * @exception org.luaj.vm2.LuaError if the argument does not exist.
+	 * @exception LuaError if the argument does not exist.
 	 */
 	public LuaValue optvalue(int i, LuaValue defval) { return i > 0 && i <= narg()? arg(i): defval; }
 
@@ -361,7 +361,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return true if argument i is boolean true, false if it is false
-	 * @exception org.luaj.vm2.LuaError if the argument is not a lua boolean
+	 * @exception LuaError if the argument is not a lua boolean
 	 */
 	public boolean checkboolean(int i) { return arg(i).checkboolean(); }
 
@@ -370,7 +370,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaClosure if argument i is a closure.
-	 * @exception org.luaj.vm2.LuaError if the argument is not a lua closure
+	 * @exception LuaError if the argument is not a lua closure
 	 */
 	public LuaClosure checkclosure(int i) { return arg(i).checkclosure(); }
 
@@ -381,7 +381,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return java double value if argument i is a number or string that
 	 *         converts to a number
-	 * @exception org.luaj.vm2.LuaError if the argument is not a number
+	 * @exception LuaError if the argument is not a number
 	 */
 	public double checkdouble(int i) { return arg(i).checkdouble(); }
 
@@ -392,7 +392,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaValue that can be called if argument i is lua function or
 	 *         closure
-	 * @exception org.luaj.vm2.LuaError if the argument is not a lua function or closure
+	 * @exception LuaError if the argument is not a lua function or closure
 	 */
 	public LuaFunction checkfunction(int i) { return arg(i).checkfunction(); }
 
@@ -403,7 +403,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return int value if argument i is a number or string that converts to a
 	 *         number
-	 * @exception org.luaj.vm2.LuaError if the argument cannot be represented by a java int
+	 * @exception LuaError if the argument cannot be represented by a java int
 	 *                     value
 	 */
 	public int checkint(int i) { return arg(i).checkint(); }
@@ -414,7 +414,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaInteger value that fits in a java int without rounding
-	 * @exception org.luaj.vm2.LuaError if the argument cannot be represented by a java int
+	 * @exception LuaError if the argument cannot be represented by a java int
 	 *                     value
 	 */
 	public LuaInteger checkinteger(int i) { return arg(i).checkinteger(); }
@@ -426,7 +426,7 @@ public abstract class Varargs {
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return long value if argument i is a number or string that converts to a
 	 *         number
-	 * @exception org.luaj.vm2.LuaError if the argument cannot be represented by a java long
+	 * @exception LuaError if the argument cannot be represented by a java long
 	 *                     value
 	 */
 	public long checklong(int i) { return arg(i).checklong(); }
@@ -437,7 +437,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaNumber if argument i is number or can be converted to a number
-	 * @exception org.luaj.vm2.LuaError if the argument is not a number
+	 * @exception LuaError if the argument is not a number
 	 */
 	public LuaNumber checknumber(int i) { return arg(i).checknumber(); }
 
@@ -447,7 +447,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return String value if argument i is a string or number
-	 * @exception org.luaj.vm2.LuaError if the argument is not a string or number
+	 * @exception LuaError if the argument is not a string or number
 	 */
 	public String checkjstring(int i) { return arg(i).checkjstring(); }
 
@@ -457,7 +457,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaString value if argument i is a string or number
-	 * @exception org.luaj.vm2.LuaError if the argument is not a string or number
+	 * @exception LuaError if the argument is not a string or number
 	 */
 	public LuaString checkstring(int i) { return arg(i).checkstring(); }
 
@@ -467,7 +467,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaTable value if a table
-	 * @exception org.luaj.vm2.LuaError if the argument is not a lua table
+	 * @exception LuaError if the argument is not a lua table
 	 */
 	public LuaTable checktable(int i) { return arg(i).checktable(); }
 
@@ -477,7 +477,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaThread value if a thread
-	 * @exception org.luaj.vm2.LuaError if the argument is not a lua thread
+	 * @exception LuaError if the argument is not a lua thread
 	 */
 	public LuaThread checkthread(int i) { return arg(i).checkthread(); }
 
@@ -487,7 +487,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return java Object value if argument i is a userdata
-	 * @exception org.luaj.vm2.LuaError if the argument is not a userdata
+	 * @exception LuaError if the argument is not a userdata
 	 */
 	public Object checkuserdata(int i) { return arg(i).checkuserdata(); }
 
@@ -499,7 +499,7 @@ public abstract class Varargs {
 	 * @param c the class to which the userdata instance must be assignable
 	 * @return java Object value if argument i is a userdata whose instance
 	 *         Class c or a subclass
-	 * @exception org.luaj.vm2.LuaError if the argument is not a userdata or from whose
+	 * @exception LuaError if the argument is not a userdata or from whose
 	 *                     instance c is not assignable
 	 */
 	public Object checkuserdata(int i, Class c) { return arg(i).checkuserdata(c); }
@@ -509,7 +509,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaValue value if the argument exists
-	 * @exception org.luaj.vm2.LuaError if the argument does not exist.
+	 * @exception LuaError if the argument does not exist.
 	 */
 	public LuaValue checkvalue(int i) { return i <= narg()? arg(i): LuaValue.argerror(i, "value expected"); }
 
@@ -519,7 +519,7 @@ public abstract class Varargs {
 	 *
 	 * @param i the index of the argument to test, 1 is the first argument
 	 * @return LuaValue value if the argument is not nil
-	 * @exception org.luaj.vm2.LuaError if the argument doesn't exist or evaluates to nil.
+	 * @exception LuaError if the argument doesn't exist or evaluates to nil.
 	 */
 	public LuaValue checknotnil(int i) { return arg(i).checknotnil(); }
 
@@ -734,7 +734,7 @@ public abstract class Varargs {
 				if (newstart == this.end)
 					return v.arg(this.end);
 				if (newstart == this.end-1)
-					return new PairVarargs(v.arg(this.end-1), v.arg(this.end));
+					return new Varargs.PairVarargs(v.arg(this.end-1), v.arg(this.end));
 				return new SubVarargs(v, newstart, this.end);
 			}
 			return new SubVarargs(v, newstart, this.end);

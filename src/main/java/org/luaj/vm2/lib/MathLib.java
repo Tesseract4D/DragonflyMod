@@ -94,7 +94,7 @@ import org.luaj.vm2.Varargs;
  * @see <a href="http://www.lua.org/manual/5.2/manual.html#6.6">Lua 5.2 Math Lib
  *      Reference</a>
  */
-public class MathLib extends org.luaj.vm2.lib.TwoArgFunction {
+public class MathLib extends TwoArgFunction {
 
 	/**
 	 * Pointer to the latest MathLib instance, used only to dispatch math.exp to
@@ -152,7 +152,7 @@ public class MathLib extends org.luaj.vm2.lib.TwoArgFunction {
 		return math;
 	}
 
-	abstract protected static class UnaryOp extends org.luaj.vm2.lib.OneArgFunction {
+	abstract protected static class UnaryOp extends OneArgFunction {
 		@Override
 		public LuaValue call(LuaValue arg) {
 			return valueOf(call(arg.checkdouble()));
@@ -161,7 +161,7 @@ public class MathLib extends org.luaj.vm2.lib.TwoArgFunction {
 		abstract protected double call(double d);
 	}
 
-	abstract protected static class BinaryOp extends org.luaj.vm2.lib.TwoArgFunction {
+	abstract protected static class BinaryOp extends TwoArgFunction {
 		@Override
 		public LuaValue call(LuaValue x, LuaValue y) {
 			return valueOf(call(x.checkdouble(), y.checkdouble()));
@@ -255,7 +255,7 @@ public class MathLib extends org.luaj.vm2.lib.TwoArgFunction {
 		}
 	}
 
-	static class frexp extends org.luaj.vm2.lib.VarArgFunction {
+	static class frexp extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			double x = args.checkdouble(1);
@@ -268,7 +268,7 @@ public class MathLib extends org.luaj.vm2.lib.TwoArgFunction {
 		}
 	}
 
-	static class max extends org.luaj.vm2.lib.VarArgFunction {
+	static class max extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			LuaValue m = args.checknumber(1);
@@ -281,7 +281,7 @@ public class MathLib extends org.luaj.vm2.lib.TwoArgFunction {
 		}
 	}
 
-	static class min extends org.luaj.vm2.lib.VarArgFunction {
+	static class min extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			LuaValue m = args.checknumber(1);

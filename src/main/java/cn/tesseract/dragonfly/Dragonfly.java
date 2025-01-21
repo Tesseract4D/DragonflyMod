@@ -17,7 +17,6 @@ public class Dragonfly {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent e) {
-        DragonflyCoreMod.phase = "init";
         LuaBridge.callLuaEvent(e);
     }
 
@@ -28,14 +27,11 @@ public class Dragonfly {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
-        MinecraftForge.EVENT_BUS.register(this);
-        DragonflyCoreMod.phase = "preInit";
         LuaBridge.callLuaEvent(e);
     }
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent e) {
-        DragonflyCoreMod.phase = "postInit";
-        LuaBridge.callLuaEvent(e);
+        LuaBridge.callLuaEvent( e);
     }
 }

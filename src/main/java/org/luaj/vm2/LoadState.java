@@ -179,7 +179,7 @@ public class LoadState {
 
 	private static final LuaValue[]  NOVALUES     = {};
 	private static final Prototype[] NOPROTOS     = {};
-	private static final org.luaj.vm2.LocVars[]   NOLOCVARS    = {};
+	private static final LocVars[]   NOLOCVARS    = {};
 	private static final Upvaldesc[] NOUPVALDESCS = {};
 	private static final int[]       NOINTS       = {};
 
@@ -248,15 +248,15 @@ public class LoadState {
 	/**
 	 * Load a lua strin gvalue from the input stream
 	 *
-	 * @return the {@link org.luaj.vm2.LuaString} value laoded.
+	 * @return the {@link LuaString} value laoded.
 	 **/
-	org.luaj.vm2.LuaString loadString() throws IOException {
+	LuaString loadString() throws IOException {
 		int size = this.luacSizeofSizeT == 8? (int) loadInt64(): loadInt();
 		if (size == 0)
 			return null;
 		byte[] bytes = new byte[size];
 		is.readFully(bytes, 0, size);
-		return org.luaj.vm2.LuaString.valueUsing(bytes, 0, bytes.length-1);
+		return LuaString.valueUsing(bytes, 0, bytes.length-1);
 	}
 
 	/**
@@ -359,9 +359,9 @@ public class LoadState {
 		f.source = loadString();
 		f.lineinfo = loadIntArray();
 		int n = loadInt();
-		f.locvars = n > 0? new org.luaj.vm2.LocVars[n]: NOLOCVARS;
+		f.locvars = n > 0? new LocVars[n]: NOLOCVARS;
 		for (int i = 0; i < n; i++) {
-			org.luaj.vm2.LuaString varname = loadString();
+			LuaString varname = loadString();
 			int startpc = loadInt();
 			int endpc = loadInt();
 			f.locvars[i] = new LocVars(varname, startpc, endpc);
@@ -379,7 +379,7 @@ public class LoadState {
 	 * @return {@link Prototype} instance that was loaded
 	 * @throws IOException
 	 */
-	public Prototype loadFunction(org.luaj.vm2.LuaString p) throws IOException {
+	public Prototype loadFunction(LuaString p) throws IOException {
 		Prototype f = new Prototype();
 ////		this.L.push(f);
 //		f.source = loadString();
@@ -419,7 +419,7 @@ public class LoadState {
 		luacNumberFormat = is.readByte();
 		for (int i = 0; i < LUAC_TAIL.length; ++i)
 			if (is.readByte() != LUAC_TAIL[i])
-				throw new org.luaj.vm2.LuaError("Unexpeted byte in luac tail of header, index=" + i);
+				throw new LuaError("Unexpeted byte in luac tail of header, index=" + i);
 	}
 
 	/**

@@ -135,19 +135,19 @@ public class Constants extends Lua {
 		return a;
 	}
 
-	static org.luaj.vm2.compiler.LexState.Vardesc[] realloc(org.luaj.vm2.compiler.LexState.Vardesc[] v, int n) {
-		org.luaj.vm2.compiler.LexState.Vardesc[] a = new org.luaj.vm2.compiler.LexState.Vardesc[n];
+	static LexState.Vardesc[] realloc(LexState.Vardesc[] v, int n) {
+		LexState.Vardesc[] a = new LexState.Vardesc[n];
 		if (v != null)
 			System.arraycopy(v, 0, a, 0, Math.min(v.length, n));
 		return a;
 	}
 
-	static org.luaj.vm2.compiler.LexState.Labeldesc[] grow(org.luaj.vm2.compiler.LexState.Labeldesc[] v, int min_n) {
-		return v == null? new org.luaj.vm2.compiler.LexState.Labeldesc[2]: v.length < min_n? realloc(v, v.length*2): v;
+	static LexState.Labeldesc[] grow(LexState.Labeldesc[] v, int min_n) {
+		return v == null? new LexState.Labeldesc[2]: v.length < min_n? realloc(v, v.length*2): v;
 	}
 
-	static org.luaj.vm2.compiler.LexState.Labeldesc[] realloc(org.luaj.vm2.compiler.LexState.Labeldesc[] v, int n) {
-		org.luaj.vm2.compiler.LexState.Labeldesc[] a = new LexState.Labeldesc[n];
+	static LexState.Labeldesc[] realloc(LexState.Labeldesc[] v, int n) {
+		LexState.Labeldesc[] a = new LexState.Labeldesc[n];
 		if (v != null)
 			System.arraycopy(v, 0, a, 0, Math.min(v.length, n));
 		return a;

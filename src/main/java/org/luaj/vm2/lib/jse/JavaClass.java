@@ -102,7 +102,7 @@ public class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion 
                 String name = HookLibPlugin.getMethodMcpName(mi.getName());
                 List list = (List) namedlists.get(name);
                 if (list == null) namedlists.put(name, list = new ArrayList());
-                list.add(org.luaj.vm2.lib.jse.JavaMethod.forMethod(mi));
+                list.add(JavaMethod.forMethod(mi));
             }
             m = ((Class) m_instance).getDeclaredMethods();
             for (Method mi : m) {
@@ -110,7 +110,7 @@ public class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion 
                     String name = HookLibPlugin.getMethodMcpName(mi.getName());
                     List list = (List) namedlists.get(name);
                     if (list == null) namedlists.put(name, list = new ArrayList());
-                    list.add(org.luaj.vm2.lib.jse.JavaMethod.forMethod(mi));
+                    list.add(JavaMethod.forMethod(mi));
                     try {
                         mi.setAccessible(true);
                     } catch (SecurityException s) {
@@ -121,7 +121,7 @@ public class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion 
             Constructor[] c = ((Class) m_instance).getConstructors();
             List list = new ArrayList();
             for (Constructor element : c)
-                if (Modifier.isPublic(element.getModifiers())) list.add(org.luaj.vm2.lib.jse.JavaConstructor.forConstructor(element));
+                if (Modifier.isPublic(element.getModifiers())) list.add(JavaConstructor.forConstructor(element));
             switch (list.size()) {
                 case 0:
                     break;
@@ -129,7 +129,7 @@ public class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion 
                     map.put(NEW, list.get(0));
                     break;
                 default:
-                    map.put(NEW, org.luaj.vm2.lib.jse.JavaConstructor.forConstructors((org.luaj.vm2.lib.jse.JavaConstructor[]) list.toArray(new JavaConstructor[list.size()])));
+                    map.put(NEW, JavaConstructor.forConstructors((JavaConstructor[]) list.toArray(new JavaConstructor[list.size()])));
                     break;
             }
 
@@ -137,7 +137,7 @@ public class JavaClass extends JavaInstance implements CoerceJavaToLua.Coercion 
                 Entry e = (Entry) it.next();
                 String name = (String) e.getKey();
                 List methods = (List) e.getValue();
-                map.put(LuaValue.valueOf(name), methods.size() == 1 ? methods.get(0) : org.luaj.vm2.lib.jse.JavaMethod.forMethods((org.luaj.vm2.lib.jse.JavaMethod[]) methods.toArray(new JavaMethod[methods.size()])));
+                map.put(LuaValue.valueOf(name), methods.size() == 1 ? methods.get(0) : JavaMethod.forMethods((JavaMethod[]) methods.toArray(new JavaMethod[methods.size()])));
             }
             methods = map;
         }

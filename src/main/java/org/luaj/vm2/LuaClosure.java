@@ -24,7 +24,7 @@ package org.luaj.vm2;
 import org.luaj.vm2.lib.DebugLib.CallFrame;
 
 /**
- * Extension of {@link org.luaj.vm2.LuaFunction} which executes lua bytecode.
+ * Extension of {@link LuaFunction} which executes lua bytecode.
  * <p>
  * A {@link LuaClosure} is a combination of a {@link Prototype} and a
  * {@link LuaValue} to use as an environment for execution. Normally the
@@ -37,7 +37,7 @@ import org.luaj.vm2.lib.DebugLib.CallFrame;
  * <li>Construct an instance using {@link #LuaClosure(Prototype, LuaValue)}</li>
  * <li>Construct it indirectly by loading a chunk via
  * {@link Globals#load(java.io.Reader, String)}
- * <li>Execute the lua bytecode {@link org.luaj.vm2.Lua#OP_CLOSURE} as part of bytecode
+ * <li>Execute the lua bytecode {@link Lua#OP_CLOSURE} as part of bytecode
  * processing
  * </ul>
  * <p>
@@ -71,25 +71,25 @@ import org.luaj.vm2.lib.DebugLib.CallFrame;
  * <p>
  * In this example, the "checkclosure()" may fail if direct lua-to-java-bytecode
  * compiling using LuaJC is installed, because no LuaClosure is created in that
- * case and the value returned is a {@link org.luaj.vm2.LuaFunction} but not a
+ * case and the value returned is a {@link LuaFunction} but not a
  * {@link LuaClosure}.
  * <p>
- * Since a {@link LuaClosure} is a {@link org.luaj.vm2.LuaFunction} which is a
+ * Since a {@link LuaClosure} is a {@link LuaFunction} which is a
  * {@link LuaValue}, all the value operations can be used directly such as:
  * <ul>
  * <li>{@link LuaValue#call()}</li>
  * <li>{@link LuaValue#call(LuaValue)}</li>
  * <li>{@link LuaValue#invoke()}</li>
- * <li>{@link LuaValue#invoke(org.luaj.vm2.Varargs)}</li>
+ * <li>{@link LuaValue#invoke(Varargs)}</li>
  * <li>{@link LuaValue#method(String)}</li>
  * <li>{@link LuaValue#method(String,LuaValue)}</li>
  * <li>{@link LuaValue#invokemethod(String)}</li>
- * <li>{@link LuaValue#invokemethod(String, org.luaj.vm2.Varargs)}</li>
+ * <li>{@link LuaValue#invokemethod(String,Varargs)}</li>
  * <li>...</li>
  * </ul>
  *
  * @see LuaValue
- * @see org.luaj.vm2.LuaFunction
+ * @see LuaFunction
  * @see LuaValue#isclosure()
  * @see LuaValue#checkclosure()
  * @see LuaValue#optclosure(LuaClosure)
@@ -212,19 +212,19 @@ public class LuaClosure extends LuaFunction {
 	}
 
 	@Override
-	public final org.luaj.vm2.Varargs invoke(org.luaj.vm2.Varargs varargs) {
+	public final Varargs invoke(Varargs varargs) {
 		return onInvoke(varargs).eval();
 	}
 
 	@Override
-	public final org.luaj.vm2.Varargs onInvoke(org.luaj.vm2.Varargs varargs) {
+	public final Varargs onInvoke(Varargs varargs) {
 		LuaValue[] stack = getNewStack();
 		for (int i = 0; i < p.numparams; i++)
 			stack[i] = varargs.arg(i+1);
 		return execute(stack, p.is_vararg != 0? varargs.subargs(p.numparams+1): NONE);
 	}
 
-	protected org.luaj.vm2.Varargs execute(LuaValue[] stack, org.luaj.vm2.Varargs varargs) {
+	protected Varargs execute(LuaValue[] stack, Varargs varargs) {
 		// loop through instructions
 		int i, a, b, c, pc = 0, top = 0;
 		LuaValue o;
@@ -253,114 +253,114 @@ public class LuaClosure extends LuaFunction {
 				// process the op code
 				switch (i & 0x3f) {
 
-				case org.luaj.vm2.Lua.OP_MOVE:/*	A B	R(A):= R(B)					*/
+				case Lua.OP_MOVE:/*	A B	R(A):= R(B)					*/
 					stack[a] = stack[i>>>23];
 					continue;
 
-				case org.luaj.vm2.Lua.OP_LOADK:/*	A Bx	R(A):= Kst(Bx)					*/
+				case Lua.OP_LOADK:/*	A Bx	R(A):= Kst(Bx)					*/
 					stack[a] = k[i>>>14];
 					continue;
 
-				case org.luaj.vm2.Lua.OP_LOADKX:/*	A 	R(A) := Kst(extra arg)					*/
+				case Lua.OP_LOADKX:/*	A 	R(A) := Kst(extra arg)					*/
 					++pc;
 					i = code[pc];
-					if ((i & 0x3f) != org.luaj.vm2.Lua.OP_EXTRAARG) {
+					if ((i & 0x3f) != Lua.OP_EXTRAARG) {
 						int op = i & 0x3f;
-						throw new org.luaj.vm2.LuaError("OP_EXTRAARG expected after OP_LOADKX, got "
+						throw new LuaError("OP_EXTRAARG expected after OP_LOADKX, got "
 							+ (op < Print.OPNAMES.length-1? Print.OPNAMES[op]: "UNKNOWN_OP_" + op));
 					}
 					stack[a] = k[i>>>6];
 					continue;
 
-				case org.luaj.vm2.Lua.OP_LOADBOOL:/*	A B C	R(A):= (Bool)B: if (C) pc++			*/
-					stack[a] = i>>>23 != 0? TRUE : FALSE;
+				case Lua.OP_LOADBOOL:/*	A B C	R(A):= (Bool)B: if (C) pc++			*/
+					stack[a] = i>>>23 != 0? LuaValue.TRUE: LuaValue.FALSE;
 					if ((i & 0x1ff<<14) != 0)
 						++pc; /* skip next instruction (if C) */
 					continue;
 
-				case org.luaj.vm2.Lua.OP_LOADNIL: /*	A B	R(A):= ...:= R(A+B):= nil			*/
+				case Lua.OP_LOADNIL: /*	A B	R(A):= ...:= R(A+B):= nil			*/
 					for (b = i>>>23; b-- >= 0;)
-						stack[a++] = NIL;
+						stack[a++] = LuaValue.NIL;
 					continue;
 
-				case org.luaj.vm2.Lua.OP_GETUPVAL: /*	A B	R(A):= UpValue[B]				*/
+				case Lua.OP_GETUPVAL: /*	A B	R(A):= UpValue[B]				*/
 					stack[a] = upValues[i>>>23].getValue();
 					continue;
 
-				case org.luaj.vm2.Lua.OP_GETTABUP: /*	A B C	R(A) := UpValue[B][RK(C)]			*/
+				case Lua.OP_GETTABUP: /*	A B C	R(A) := UpValue[B][RK(C)]			*/
 					stack[a] = upValues[i>>>23].getValue().get((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_GETTABLE: /*	A B C	R(A):= R(B)[RK(C)]				*/
+				case Lua.OP_GETTABLE: /*	A B C	R(A):= R(B)[RK(C)]				*/
 					stack[a] = stack[i>>>23].get((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_SETTABUP: /*	A B C	UpValue[A][RK(B)] := RK(C)			*/
+				case Lua.OP_SETTABUP: /*	A B C	UpValue[A][RK(B)] := RK(C)			*/
 					upValues[a].getValue().set((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b],
 						(c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_SETUPVAL: /*	A B	UpValue[B]:= R(A)				*/
+				case Lua.OP_SETUPVAL: /*	A B	UpValue[B]:= R(A)				*/
 					upValues[i>>>23].setValue(stack[a]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_SETTABLE: /*	A B C	R(A)[RK(B)]:= RK(C)				*/
+				case Lua.OP_SETTABLE: /*	A B C	R(A)[RK(B)]:= RK(C)				*/
 					stack[a].set((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b],
 						(c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_NEWTABLE: /*	A B C	R(A):= {} (size = B,C)				*/
+				case Lua.OP_NEWTABLE: /*	A B C	R(A):= {} (size = B,C)				*/
 					stack[a] = new LuaTable(i>>>23, i>>14 & 0x1ff);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_SELF: /*	A B C	R(A+1):= R(B): R(A):= R(B)[RK(C)]		*/
+				case Lua.OP_SELF: /*	A B C	R(A+1):= R(B): R(A):= R(B)[RK(C)]		*/
 					stack[a+1] = o = stack[i>>>23];
 					stack[a] = o.get((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_ADD: /*	A B C	R(A):= RK(B) + RK(C)				*/
+				case Lua.OP_ADD: /*	A B C	R(A):= RK(B) + RK(C)				*/
 					stack[a] = ((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b])
 						.add((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_SUB: /*	A B C	R(A):= RK(B) - RK(C)				*/
+				case Lua.OP_SUB: /*	A B C	R(A):= RK(B) - RK(C)				*/
 					stack[a] = ((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b])
 						.sub((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_MUL: /*	A B C	R(A):= RK(B) * RK(C)				*/
+				case Lua.OP_MUL: /*	A B C	R(A):= RK(B) * RK(C)				*/
 					stack[a] = ((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b])
 						.mul((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_DIV: /*	A B C	R(A):= RK(B) / RK(C)				*/
+				case Lua.OP_DIV: /*	A B C	R(A):= RK(B) / RK(C)				*/
 					stack[a] = ((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b])
 						.div((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_MOD: /*	A B C	R(A):= RK(B) % RK(C)				*/
+				case Lua.OP_MOD: /*	A B C	R(A):= RK(B) % RK(C)				*/
 					stack[a] = ((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b])
 						.mod((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_POW: /*	A B C	R(A):= RK(B) ^ RK(C)				*/
+				case Lua.OP_POW: /*	A B C	R(A):= RK(B) ^ RK(C)				*/
 					stack[a] = ((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b])
 						.pow((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]);
 					continue;
 
-				case org.luaj.vm2.Lua.OP_UNM: /*	A B	R(A):= -R(B)					*/
+				case Lua.OP_UNM: /*	A B	R(A):= -R(B)					*/
 					stack[a] = stack[i>>>23].neg();
 					continue;
 
-				case org.luaj.vm2.Lua.OP_NOT: /*	A B	R(A):= not R(B)				*/
+				case Lua.OP_NOT: /*	A B	R(A):= not R(B)				*/
 					stack[a] = stack[i>>>23].not();
 					continue;
 
-				case org.luaj.vm2.Lua.OP_LEN: /*	A B	R(A):= length of R(B)				*/
+				case Lua.OP_LEN: /*	A B	R(A):= length of R(B)				*/
 					stack[a] = stack[i>>>23].len();
 					continue;
 
-				case org.luaj.vm2.Lua.OP_CONCAT: /*	A B C	R(A):= R(B).. ... ..R(C)			*/
+				case Lua.OP_CONCAT: /*	A B C	R(A):= R(B).. ... ..R(C)			*/
 					b = i>>>23;
 					c = i>>14 & 0x1ff; {
 					if (c > b+1) {
@@ -374,7 +374,7 @@ public class LuaClosure extends LuaFunction {
 				}
 					continue;
 
-				case org.luaj.vm2.Lua.OP_JMP: /*	A sBx	pc+=sBx; if (A) close all upvalues >= R(A - 1)	*/
+				case Lua.OP_JMP: /*	A sBx	pc+=sBx; if (A) close all upvalues >= R(A - 1)	*/
 					pc += (i>>>14)-0x1ffff;
 					if (a > 0) {
 						for (--a, b = openups.length; --b >= 0;)
@@ -385,30 +385,30 @@ public class LuaClosure extends LuaFunction {
 					}
 					continue;
 
-				case org.luaj.vm2.Lua.OP_EQ: /*	A B C	if ((RK(B) == RK(C)) ~= A) then pc++		*/
+				case Lua.OP_EQ: /*	A B C	if ((RK(B) == RK(C)) ~= A) then pc++		*/
 					if (((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b])
 						.eq_b((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]) != (a != 0))
 						++pc;
 					continue;
 
-				case org.luaj.vm2.Lua.OP_LT: /*	A B C	if ((RK(B) <  RK(C)) ~= A) then pc++  		*/
+				case Lua.OP_LT: /*	A B C	if ((RK(B) <  RK(C)) ~= A) then pc++  		*/
 					if (((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b])
 						.lt_b((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]) != (a != 0))
 						++pc;
 					continue;
 
-				case org.luaj.vm2.Lua.OP_LE: /*	A B C	if ((RK(B) <= RK(C)) ~= A) then pc++  		*/
+				case Lua.OP_LE: /*	A B C	if ((RK(B) <= RK(C)) ~= A) then pc++  		*/
 					if (((b = i>>>23) > 0xff? k[b & 0x0ff]: stack[b])
 						.lteq_b((c = i>>14 & 0x1ff) > 0xff? k[c & 0x0ff]: stack[c]) != (a != 0))
 						++pc;
 					continue;
 
-				case org.luaj.vm2.Lua.OP_TEST: /*	A C	if not (R(A) <=> C) then pc++			*/
+				case Lua.OP_TEST: /*	A C	if not (R(A) <=> C) then pc++			*/
 					if (stack[a].toboolean() != ((i & 0x1ff<<14) != 0))
 						++pc;
 					continue;
 
-				case org.luaj.vm2.Lua.OP_TESTSET: /*	A B C	if (R(B) <=> C) then R(A):= R(B) else pc++	*/
+				case Lua.OP_TESTSET: /*	A B C	if (R(B) <=> C) then R(A):= R(B) else pc++	*/
 					/* note: doc appears to be reversed */
 					if ((o = stack[i>>>23]).toboolean() != ((i & 0x1ff<<14) != 0))
 						++pc;
@@ -416,38 +416,38 @@ public class LuaClosure extends LuaFunction {
 						stack[a] = o; // TODO: should be sBx?
 					continue;
 
-				case org.luaj.vm2.Lua.OP_CALL: /*	A B C	R(A), ... ,R(A+C-2):= R(A)(R(A+1), ... ,R(A+B-1)) */
-					switch (i & (org.luaj.vm2.Lua.MASK_B | org.luaj.vm2.Lua.MASK_C)) {
-					case 1<< org.luaj.vm2.Lua.POS_B | 0<< org.luaj.vm2.Lua.POS_C:
+				case Lua.OP_CALL: /*	A B C	R(A), ... ,R(A+C-2):= R(A)(R(A+1), ... ,R(A+B-1)) */
+					switch (i & (Lua.MASK_B | Lua.MASK_C)) {
+					case 1<<Lua.POS_B | 0<<Lua.POS_C:
 						v = stack[a].invoke(NONE);
 						top = a+v.narg();
 						continue;
-					case 2<< org.luaj.vm2.Lua.POS_B | 0<< org.luaj.vm2.Lua.POS_C:
+					case 2<<Lua.POS_B | 0<<Lua.POS_C:
 						v = stack[a].invoke(stack[a+1]);
 						top = a+v.narg();
 						continue;
-					case 1<< org.luaj.vm2.Lua.POS_B | 1<< org.luaj.vm2.Lua.POS_C:
+					case 1<<Lua.POS_B | 1<<Lua.POS_C:
 						stack[a].call();
 						continue;
-					case 2<< org.luaj.vm2.Lua.POS_B | 1<< org.luaj.vm2.Lua.POS_C:
+					case 2<<Lua.POS_B | 1<<Lua.POS_C:
 						stack[a].call(stack[a+1]);
 						continue;
-					case 3<< org.luaj.vm2.Lua.POS_B | 1<< org.luaj.vm2.Lua.POS_C:
+					case 3<<Lua.POS_B | 1<<Lua.POS_C:
 						stack[a].call(stack[a+1], stack[a+2]);
 						continue;
-					case 4<< org.luaj.vm2.Lua.POS_B | 1<< org.luaj.vm2.Lua.POS_C:
+					case 4<<Lua.POS_B | 1<<Lua.POS_C:
 						stack[a].call(stack[a+1], stack[a+2], stack[a+3]);
 						continue;
-					case 1<< org.luaj.vm2.Lua.POS_B | 2<< org.luaj.vm2.Lua.POS_C:
+					case 1<<Lua.POS_B | 2<<Lua.POS_C:
 						stack[a] = stack[a].call();
 						continue;
-					case 2<< org.luaj.vm2.Lua.POS_B | 2<< org.luaj.vm2.Lua.POS_C:
+					case 2<<Lua.POS_B | 2<<Lua.POS_C:
 						stack[a] = stack[a].call(stack[a+1]);
 						continue;
-					case 3<< org.luaj.vm2.Lua.POS_B | 2<< org.luaj.vm2.Lua.POS_C:
+					case 3<<Lua.POS_B | 2<<Lua.POS_C:
 						stack[a] = stack[a].call(stack[a+1], stack[a+2]);
 						continue;
-					case 4<< org.luaj.vm2.Lua.POS_B | 2<< org.luaj.vm2.Lua.POS_C:
+					case 4<<Lua.POS_B | 2<<Lua.POS_C:
 						stack[a] = stack[a].call(stack[a+1], stack[a+2], stack[a+3]);
 						continue;
 					default:
@@ -465,16 +465,16 @@ public class LuaClosure extends LuaFunction {
 						continue;
 					}
 
-				case org.luaj.vm2.Lua.OP_TAILCALL: /*	A B C	return R(A)(R(A+1), ... ,R(A+B-1))		*/
-					switch (i & org.luaj.vm2.Lua.MASK_B) {
-					case 1<< org.luaj.vm2.Lua.POS_B:
-						return new org.luaj.vm2.TailcallVarargs(stack[a], NONE);
-					case 2<< org.luaj.vm2.Lua.POS_B:
-						return new org.luaj.vm2.TailcallVarargs(stack[a], stack[a+1]);
-					case 3<< org.luaj.vm2.Lua.POS_B:
-						return new org.luaj.vm2.TailcallVarargs(stack[a], varargsOf(stack[a+1], stack[a+2]));
-					case 4<< org.luaj.vm2.Lua.POS_B:
-						return new org.luaj.vm2.TailcallVarargs(stack[a], varargsOf(stack[a+1], stack[a+2], stack[a+3]));
+				case Lua.OP_TAILCALL: /*	A B C	return R(A)(R(A+1), ... ,R(A+B-1))		*/
+					switch (i & Lua.MASK_B) {
+					case 1<<Lua.POS_B:
+						return new TailcallVarargs(stack[a], NONE);
+					case 2<<Lua.POS_B:
+						return new TailcallVarargs(stack[a], stack[a+1]);
+					case 3<<Lua.POS_B:
+						return new TailcallVarargs(stack[a], varargsOf(stack[a+1], stack[a+2]));
+					case 4<<Lua.POS_B:
+						return new TailcallVarargs(stack[a], varargsOf(stack[a+1], stack[a+2], stack[a+3]));
 					default:
 						b = i>>>23;
 						v = b > 0? varargsOf(stack, a+1, b-1): // exact arg count
@@ -482,7 +482,7 @@ public class LuaClosure extends LuaFunction {
 						return new TailcallVarargs(stack[a], v);
 					}
 
-				case org.luaj.vm2.Lua.OP_RETURN: /*	A B	return R(A), ... ,R(A+B-2)	(see note)	*/
+				case Lua.OP_RETURN: /*	A B	return R(A), ... ,R(A+B-2)	(see note)	*/
 					b = i>>>23;
 					switch (b) {
 					case 0:
@@ -495,7 +495,7 @@ public class LuaClosure extends LuaFunction {
 						return varargsOf(stack, a, b-1);
 					}
 
-				case org.luaj.vm2.Lua.OP_FORLOOP: /*	A sBx	R(A)+=R(A+2): if R(A) <?= R(A+1) then { pc+=sBx: R(A+3)=R(A) }*/
+				case Lua.OP_FORLOOP: /*	A sBx	R(A)+=R(A+2): if R(A) <?= R(A+1) then { pc+=sBx: R(A+3)=R(A) }*/
 				{
 					LuaValue limit = stack[a+1];
 					LuaValue step = stack[a+2];
@@ -508,7 +508,7 @@ public class LuaClosure extends LuaFunction {
 				}
 					continue;
 
-				case org.luaj.vm2.Lua.OP_FORPREP: /*	A sBx	R(A)-=R(A+2): pc+=sBx				*/
+				case Lua.OP_FORPREP: /*	A sBx	R(A)-=R(A+2): pc+=sBx				*/
 				{
 					LuaValue init = stack[a].checknumber("'for' initial value must be a number");
 					LuaValue limit = stack[a+1].checknumber("'for' limit must be a number");
@@ -520,7 +520,7 @@ public class LuaClosure extends LuaFunction {
 				}
 					continue;
 
-				case org.luaj.vm2.Lua.OP_TFORCALL: /* A C	R(A+3), ... ,R(A+2+C) := R(A)(R(A+1), R(A+2));	*/
+				case Lua.OP_TFORCALL: /* A C	R(A+3), ... ,R(A+2+C) := R(A)(R(A+1), R(A+2));	*/
 					v = stack[a].invoke(varargsOf(stack[a+1], stack[a+2]));
 					c = i>>14 & 0x1ff;
 					while ( --c >= 0 )
@@ -528,18 +528,18 @@ public class LuaClosure extends LuaFunction {
 					v = NONE;
 					continue;
 
-				case org.luaj.vm2.Lua.OP_TFORLOOP: /* A sBx	if R(A+1) ~= nil then { R(A)=R(A+1); pc += sBx */
+				case Lua.OP_TFORLOOP: /* A sBx	if R(A+1) ~= nil then { R(A)=R(A+1); pc += sBx */
 					if (!stack[a+1].isnil()) { /* continue loop? */
 						stack[a] = stack[a+1]; /* save control varible. */
 						pc += (i>>>14)-0x1ffff;
 					}
 					continue;
 
-				case org.luaj.vm2.Lua.OP_SETLIST: /*	A B C	R(A)[(C-1)*FPF+i]:= R(A+i), 1 <= i <= B	*/
+				case Lua.OP_SETLIST: /*	A B C	R(A)[(C-1)*FPF+i]:= R(A+i), 1 <= i <= B	*/
 				{
 					if ((c = i>>14 & 0x1ff) == 0)
 						c = code[++pc];
-					int offset = (c-1)* org.luaj.vm2.Lua.LFIELDS_PER_FLUSH;
+					int offset = (c-1)*Lua.LFIELDS_PER_FLUSH;
 					o = stack[a];
 					if ((b = i>>>23) == 0) {
 						b = top-a-1;
@@ -557,7 +557,7 @@ public class LuaClosure extends LuaFunction {
 				}
 					continue;
 
-				case org.luaj.vm2.Lua.OP_CLOSURE: /*	A Bx	R(A):= closure(KPROTO[Bx])	*/
+				case Lua.OP_CLOSURE: /*	A Bx	R(A):= closure(KPROTO[Bx])	*/
 				{
 					Prototype newp = p.p[i>>>14];
 					LuaClosure ncl = new LuaClosure(newp, globals);
@@ -572,7 +572,7 @@ public class LuaClosure extends LuaFunction {
 				}
 					continue;
 
-				case org.luaj.vm2.Lua.OP_VARARG: /*	A B	R(A), R(A+1), ..., R(A+B-1) = vararg		*/
+				case Lua.OP_VARARG: /*	A B	R(A), R(A+1), ..., R(A+B-1) = vararg		*/
 					b = i>>>23;
 					if (b == 0) {
 						top = a+(b = varargs.narg());
@@ -584,18 +584,18 @@ public class LuaClosure extends LuaFunction {
 					continue;
 
 				case Lua.OP_EXTRAARG:
-					throw new IllegalArgumentException("Uexecutable opcode: OP_EXTRAARG");
+					throw new java.lang.IllegalArgumentException("Uexecutable opcode: OP_EXTRAARG");
 
 				default:
-					throw new IllegalArgumentException("Illegal opcode: " + (i & 0x3f));
+					throw new java.lang.IllegalArgumentException("Illegal opcode: " + (i & 0x3f));
 				}
 			}
-		} catch (org.luaj.vm2.LuaError le) {
+		} catch (LuaError le) {
 			if (le.traceback == null)
 				processErrorHooks(le, p, pc);
 			throw le;
 		} catch (Exception e) {
-			org.luaj.vm2.LuaError le = new org.luaj.vm2.LuaError(e);
+			LuaError le = new LuaError(e);
 			processErrorHooks(le, p, pc);
 			throw le;
 		} finally {
@@ -622,7 +622,7 @@ public class LuaClosure extends LuaFunction {
 		final LuaValue e = r.errorfunc;
 		r.errorfunc = null;
 		try {
-			return e.call(valueOf(msg)).tojstring();
+			return e.call(LuaValue.valueOf(msg)).tojstring();
 		} catch (Throwable t) {
 			return "error in error handling";
 		} finally {

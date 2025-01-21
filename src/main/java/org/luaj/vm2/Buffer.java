@@ -33,7 +33,7 @@ package org.luaj.vm2;
  *
  * @see LuaValue
  * @see LuaValue#buffer()
- * @see org.luaj.vm2.LuaString
+ * @see LuaString
  */
 public final class Buffer {
 
@@ -109,13 +109,13 @@ public final class Buffer {
 	}
 
 	/**
-	 * Convert the buffer to a {@link org.luaj.vm2.LuaString}
+	 * Convert the buffer to a {@link LuaString}
 	 *
-	 * @return the value as a {@link org.luaj.vm2.LuaString}
+	 * @return the value as a {@link LuaString}
 	 */
-	public org.luaj.vm2.LuaString tostring() {
+	public LuaString tostring() {
 		realloc(length, 0);
-		return org.luaj.vm2.LuaString.valueOf(bytes, offset, length);
+		return LuaString.valueOf(bytes, offset, length);
 	}
 
 	/**
@@ -159,11 +159,11 @@ public final class Buffer {
 	}
 
 	/**
-	 * Append a {@link org.luaj.vm2.LuaString} to the buffer.
+	 * Append a {@link LuaString} to the buffer.
 	 *
 	 * @return {@code this} to allow call chaining
 	 */
-	public Buffer append(org.luaj.vm2.LuaString str) {
+	public Buffer append(LuaString str) {
 		final int n = str.m_length;
 		makeroom(0, n);
 		str.copyInto(0, bytes, offset+length, n);
@@ -176,13 +176,13 @@ public final class Buffer {
 	 * bytes using the UTF8 encoding.
 	 *
 	 * @return {@code this} to allow call chaining
-	 * @see org.luaj.vm2.LuaString#encodeToUtf8(char[], int, byte[], int)
+	 * @see LuaString#encodeToUtf8(char[], int, byte[], int)
 	 */
 	public Buffer append(String str) {
 		char[] c = str.toCharArray();
-		final int n = org.luaj.vm2.LuaString.lengthAsUtf8(c);
+		final int n = LuaString.lengthAsUtf8(c);
 		makeroom(0, n);
-		org.luaj.vm2.LuaString.encodeToUtf8(c, c.length, bytes, offset+length);
+		LuaString.encodeToUtf8(c, c.length, bytes, offset+length);
 		length += n;
 		return this;
 	}
@@ -199,20 +199,20 @@ public final class Buffer {
 	}
 
 	/**
-	 * Concatenate this buffer onto a {@link org.luaj.vm2.LuaString}
+	 * Concatenate this buffer onto a {@link LuaString}
 	 *
 	 * @param lhs the left-hand-side value onto which we are concatenating
 	 *            {@code this}
 	 * @return {@link Buffer} for use in call chaining.
 	 */
-	public Buffer concatTo(org.luaj.vm2.LuaString lhs) {
+	public Buffer concatTo(LuaString lhs) {
 		return value != null && !value.isstring()? setvalue(lhs.concat(value)): prepend(lhs);
 	}
 
 	/**
-	 * Concatenate this buffer onto a {@link org.luaj.vm2.LuaNumber}
+	 * Concatenate this buffer onto a {@link LuaNumber}
 	 * <p>
-	 * The {@link org.luaj.vm2.LuaNumber} will be converted to a string before concatenating.
+	 * The {@link LuaNumber} will be converted to a string before concatenating.
 	 *
 	 * @param lhs the left-hand-side value onto which we are concatenating
 	 *            {@code this}
@@ -223,13 +223,13 @@ public final class Buffer {
 	}
 
 	/**
-	 * Concatenate bytes from a {@link org.luaj.vm2.LuaString} onto the front of this buffer
+	 * Concatenate bytes from a {@link LuaString} onto the front of this buffer
 	 *
 	 * @param s the left-hand-side value which we will concatenate onto the
 	 *          front of {@code this}
 	 * @return {@link Buffer} for use in call chaining.
 	 */
-	public Buffer prepend(org.luaj.vm2.LuaString s) {
+	public Buffer prepend(LuaString s) {
 		int n = s.m_length;
 		makeroom(n, 0);
 		System.arraycopy(s.m_bytes, s.m_offset, bytes, offset-n, n);

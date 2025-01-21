@@ -21,22 +21,14 @@
 ******************************************************************************/
 package org.luaj.vm2;
 
-import org.luaj.vm2.Lua;
-import org.luaj.vm2.LuaClosure;
-import org.luaj.vm2.LuaString;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Prototype;
-import org.luaj.vm2.Upvaldesc;
-import org.luaj.vm2.Varargs;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 /**
  * Debug helper class to pretty-print lua bytecodes.
  *
- * @see org.luaj.vm2.Prototype
- * @see org.luaj.vm2.LuaClosure
+ * @see Prototype
+ * @see LuaClosure
  */
 public class Print extends Lua {
 
@@ -50,7 +42,7 @@ public class Print extends Lua {
 			"POW", "UNM", "NOT", "LEN", "CONCAT", "JMP", "EQ", "LT", "LE", "TEST", "TESTSET", "CALL", "TAILCALL",
 			"RETURN", "FORLOOP", "FORPREP", "TFORCALL", "TFORLOOP", "SETLIST", "CLOSURE", "VARARG", "EXTRAARG", null, };
 
-	static void printString(PrintStream ps, final org.luaj.vm2.LuaString s) {
+	static void printString(PrintStream ps, final LuaString s) {
 
 		ps.print('"');
 		for (int i = 0, n = s.m_length; i < n; i++) {
@@ -96,14 +88,14 @@ public class Print extends Lua {
 		ps.print('"');
 	}
 
-	static void printValue(PrintStream ps, org.luaj.vm2.LuaValue v) {
+	static void printValue(PrintStream ps, LuaValue v) {
 		if (v == null) {
 			ps.print("null");
 			return;
 		}
 		switch (v.type()) {
-		case org.luaj.vm2.LuaValue.TSTRING:
-			printString(ps, (org.luaj.vm2.LuaString) v);
+		case LuaValue.TSTRING:
+			printString(ps, (LuaString) v);
 			break;
 		default:
 			ps.print(v.tojstring());
@@ -111,8 +103,8 @@ public class Print extends Lua {
 		}
 	}
 
-	static void printConstant(PrintStream ps, org.luaj.vm2.Prototype f, int i) {
-		printValue(ps, i < f.k.length? f.k[i]: org.luaj.vm2.LuaValue.valueOf("UNKNOWN_CONST_" + i));
+	static void printConstant(PrintStream ps, Prototype f, int i) {
+		printValue(ps, i < f.k.length? f.k[i]: LuaValue.valueOf("UNKNOWN_CONST_" + i));
 	}
 
 	static void printUpvalue(PrintStream ps, Upvaldesc u) {
@@ -123,9 +115,9 @@ public class Print extends Lua {
 	/**
 	 * Print the code in a prototype
 	 *
-	 * @param f the {@link org.luaj.vm2.Prototype}
+	 * @param f the {@link Prototype}
 	 */
-	public static void printCode(org.luaj.vm2.Prototype f) {
+	public static void printCode(Prototype f) {
 		int[] code = f.code;
 		int pc, n = code.length;
 		for (pc = 0; pc < n; pc++) {
@@ -137,11 +129,11 @@ public class Print extends Lua {
 	/**
 	 * Print an opcode in a prototype
 	 *
-	 * @param f  the {@link org.luaj.vm2.Prototype}
+	 * @param f  the {@link Prototype}
 	 * @param pc the program counter to look up and print
 	 * @return pc same as above or changed
 	 */
-	public static int printOpCode(org.luaj.vm2.Prototype f, int pc) {
+	public static int printOpCode(Prototype f, int pc) {
 		return printOpCode(ps, f, pc);
 	}
 
@@ -149,11 +141,11 @@ public class Print extends Lua {
 	 * Print an opcode in a prototype
 	 *
 	 * @param ps the {@link PrintStream} to print to
-	 * @param f  the {@link org.luaj.vm2.Prototype}
+	 * @param f  the {@link Prototype}
 	 * @param pc the program counter to look up and print
 	 * @return pc same as above or changed
 	 */
-	public static int printOpCode(PrintStream ps, org.luaj.vm2.Prototype f, int pc) {
+	public static int printOpCode(PrintStream ps, Prototype f, int pc) {
 		int[] code = f.code;
 		int i = code[pc];
 		int o = GET_OPCODE(i);
@@ -296,11 +288,11 @@ public class Print extends Lua {
 		return pc;
 	}
 
-	private static int getline(org.luaj.vm2.Prototype f, int pc) {
+	private static int getline(Prototype f, int pc) {
 		return pc > 0 && f.lineinfo != null && pc < f.lineinfo.length? f.lineinfo[pc]: -1;
 	}
 
-	static void printHeader(org.luaj.vm2.Prototype f) {
+	static void printHeader(Prototype f) {
 		String s = String.valueOf(f.source);
 		if (s.startsWith("@") || s.startsWith("="))
 			s = s.substring(1);
@@ -315,7 +307,7 @@ public class Print extends Lua {
 		ps.print(f.locvars.length + " local, " + f.k.length + " constant, " + f.p.length + " function\n");
 	}
 
-	static void printConstants(org.luaj.vm2.Prototype f) {
+	static void printConstants(Prototype f) {
 		int i, n = f.k.length;
 		ps.print("constants (" + n + ") for " + id(f) + ":\n");
 		for (i = 0; i < n; i++) {
@@ -325,7 +317,7 @@ public class Print extends Lua {
 		}
 	}
 
-	static void printLocals(org.luaj.vm2.Prototype f) {
+	static void printLocals(Prototype f) {
 		int i, n = f.locvars.length;
 		ps.print("locals (" + n + ") for " + id(f) + ":\n");
 		for (i = 0; i < n; i++) {
@@ -334,7 +326,7 @@ public class Print extends Lua {
 		}
 	}
 
-	static void printUpValues(org.luaj.vm2.Prototype f) {
+	static void printUpValues(Prototype f) {
 		int i, n = f.upvalues.length;
 		ps.print("upvalues (" + n + ") for " + id(f) + ":\n");
 		for (i = 0; i < n; i++) {
@@ -347,7 +339,7 @@ public class Print extends Lua {
 	 *
 	 * @param prototype Prototype to print.
 	 */
-	public static void print(org.luaj.vm2.Prototype prototype) {
+	public static void print(Prototype prototype) {
 		printFunction(prototype, true);
 	}
 
@@ -357,7 +349,7 @@ public class Print extends Lua {
 	 * @param prototype Prototype to print.
 	 * @param full      true to print all fields, false to print short form.
 	 */
-	public static void printFunction(org.luaj.vm2.Prototype prototype, boolean full) {
+	public static void printFunction(Prototype prototype, boolean full) {
 		int i, n = prototype.p.length;
 		printHeader(prototype);
 		printCode(prototype);
@@ -391,15 +383,15 @@ public class Print extends Lua {
 	}
 
 	/**
-	 * Print the state of a {@link org.luaj.vm2.LuaClosure} that is being executed
+	 * Print the state of a {@link LuaClosure} that is being executed
 	 *
-	 * @param cl      the {@link org.luaj.vm2.LuaClosure}
+	 * @param cl      the {@link LuaClosure}
 	 * @param pc      the program counter
-	 * @param stack   the stack of {@link org.luaj.vm2.LuaValue}
+	 * @param stack   the stack of {@link LuaValue}
 	 * @param top     the top of the stack
-	 * @param varargs any {@link org.luaj.vm2.Varargs} value that may apply
+	 * @param varargs any {@link Varargs} value that may apply
 	 */
-	public static void printState(LuaClosure cl, int pc, org.luaj.vm2.LuaValue[] stack, int top, org.luaj.vm2.Varargs varargs) {
+	public static void printState(LuaClosure cl, int pc, LuaValue[] stack, int top, Varargs varargs) {
 		// print opcode into buffer
 		PrintStream previous = ps;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -413,21 +405,21 @@ public class Print extends Lua {
 		ps.println();
 	}
 
-	public static void printStack(org.luaj.vm2.LuaValue[] stack, int top, Varargs varargs) {
+	public static void printStack(LuaValue[] stack, int top, Varargs varargs) {
 		// print stack
 		ps.print('[');
 		for (int i = 0; i < stack.length; i++) {
-			org.luaj.vm2.LuaValue v = stack[i];
+			LuaValue v = stack[i];
 			if (v == null)
 				ps.print(STRING_FOR_NULL);
 			else
 				switch (v.type()) {
-				case org.luaj.vm2.LuaValue.TSTRING:
+				case LuaValue.TSTRING:
 					LuaString s = v.checkstring();
 					ps.print(s.length() < 48? s.tojstring()
 						: s.substring(0, 32).tojstring() + "...+" + (s.length()-32) + "b");
 					break;
-				case org.luaj.vm2.LuaValue.TFUNCTION:
+				case LuaValue.TFUNCTION:
 					ps.print(v.tojstring());
 					break;
 				case LuaValue.TUSERDATA:

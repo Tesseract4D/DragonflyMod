@@ -43,7 +43,7 @@ import org.luaj.vm2.lib.BaseLib;
  * environment.
  *
  * <p>
- * Implements the {@link Globals.Compiler} interface for loading
+ * Implements the {@link org.luaj.vm2.Globals.Compiler} interface for loading
  * initialized chunks, which is an interface common to lua bytecode compiling
  * and java bytecode compiling.
  *
@@ -79,7 +79,7 @@ import org.luaj.vm2.lib.BaseLib;
  * @see LuaValue
  * @see Prototype
  */
-public class LuaC extends org.luaj.vm2.compiler.Constants implements Globals.Compiler, Globals.Loader {
+public class LuaC extends Constants implements Globals.Compiler, Globals.Loader {
 
 	/** A sharable instance of the LuaC compiler. */
 	public static final LuaC instance = new LuaC();
@@ -134,8 +134,8 @@ public class LuaC extends org.luaj.vm2.compiler.Constants implements Globals.Com
 
 		/** Parse the input */
 		Prototype luaY_parser(InputStream z, String name) throws IOException {
-			org.luaj.vm2.compiler.LexState lexstate = new LexState(this, z);
-			org.luaj.vm2.compiler.FuncState funcstate = new FuncState();
+			LexState lexstate = new LexState(this, z);
+			FuncState funcstate = new FuncState();
 			// lexstate.buff = buff;
 			lexstate.fs = funcstate;
 			lexstate.setinput(this, z.read(), z, LuaValue.valueOf(name));
@@ -143,7 +143,7 @@ public class LuaC extends org.luaj.vm2.compiler.Constants implements Globals.Com
 			funcstate.f = new Prototype();
 			funcstate.f.source = LuaValue.valueOf(name);
 			lexstate.mainfunc(funcstate);
-			org.luaj.vm2.compiler.Constants._assert(funcstate.prev == null);
+			Constants._assert(funcstate.prev == null);
 			/* all scopes should be correctly finished */
 			Constants._assert(lexstate.dyd == null
 				|| lexstate.dyd.n_actvar == 0 && lexstate.dyd.n_gt == 0 && lexstate.dyd.n_label == 0);

@@ -29,7 +29,6 @@ import java.util.Map;
 import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 /**
  * Helper class to coerce values from lua to Java within the luajava library.

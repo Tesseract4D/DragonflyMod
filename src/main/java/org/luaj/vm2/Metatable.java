@@ -22,7 +22,6 @@
 package org.luaj.vm2;
 
 import org.luaj.vm2.LuaTable.Slot;
-import org.luaj.vm2.LuaValue;
 
 /**
  * Provides operations that depend on the __mode key of the metatable.

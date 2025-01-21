@@ -28,10 +28,10 @@ import org.luaj.vm2.LuaString;
 
 public class FuncArgs extends SyntaxElement {
 
-	public final List<org.luaj.vm2.ast.Exp> exps;
+	public final List<Exp> exps;
 
 	/** exp1,exp2... */
-	public static FuncArgs explist(List<org.luaj.vm2.ast.Exp> explist) {
+	public static FuncArgs explist(List<Exp> explist) {
 		return new FuncArgs(explist);
 	}
 
@@ -45,7 +45,7 @@ public class FuncArgs extends SyntaxElement {
 		return new FuncArgs(string);
 	}
 
-	public FuncArgs(List<org.luaj.vm2.ast.Exp> exps) {
+	public FuncArgs(List<Exp> exps) {
 		this.exps = exps;
 	}
 

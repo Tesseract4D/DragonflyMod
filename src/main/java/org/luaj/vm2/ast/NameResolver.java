@@ -3,22 +3,15 @@ package org.luaj.vm2.ast;
 import java.util.List;
 
 import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.ast.Block;
 import org.luaj.vm2.ast.Exp.Constant;
 import org.luaj.vm2.ast.Exp.NameExp;
 import org.luaj.vm2.ast.Exp.VarExp;
-import org.luaj.vm2.ast.FuncBody;
-import org.luaj.vm2.ast.Name;
-import org.luaj.vm2.ast.NameScope;
-import org.luaj.vm2.ast.ParList;
 import org.luaj.vm2.ast.Stat.Assign;
 import org.luaj.vm2.ast.Stat.FuncDef;
 import org.luaj.vm2.ast.Stat.GenericFor;
 import org.luaj.vm2.ast.Stat.LocalAssign;
 import org.luaj.vm2.ast.Stat.LocalFuncDef;
 import org.luaj.vm2.ast.Stat.NumericFor;
-import org.luaj.vm2.ast.Variable;
-import org.luaj.vm2.ast.Visitor;
 
 /**
  * Visitor that resolves names to scopes. Each Name is resolved to a
@@ -27,10 +20,10 @@ import org.luaj.vm2.ast.Visitor;
  */
 public class NameResolver extends Visitor {
 
-	private org.luaj.vm2.ast.NameScope scope = null;
+	private NameScope scope = null;
 
 	private void pushScope() {
-		scope = new org.luaj.vm2.ast.NameScope(scope);
+		scope = new NameScope(scope);
 	}
 
 	private void popScope() {
@@ -128,16 +121,16 @@ public class NameResolver extends Visitor {
 		super.visit(pars);
 	}
 
-	protected void defineLocalVars(List<org.luaj.vm2.ast.Name> names) {
-		for (org.luaj.vm2.ast.Name name : names)
+	protected void defineLocalVars(List<Name> names) {
+		for (Name name : names)
 			defineLocalVar(name);
 	}
 
-	protected void defineLocalVar(org.luaj.vm2.ast.Name name) {
+	protected void defineLocalVar(Name name) {
 		name.variable = scope.define(name.name);
 	}
 
-	protected org.luaj.vm2.ast.Variable resolveNameReference(Name name) {
+	protected Variable resolveNameReference(Name name) {
 		Variable v = scope.find(name.name);
 		if (v.isLocal() && scope.functionNestingCount != v.definingScope.functionNestingCount)
 			v.isupvalue = true;

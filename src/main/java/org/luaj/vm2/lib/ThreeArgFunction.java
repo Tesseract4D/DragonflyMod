@@ -23,11 +23,6 @@ package org.luaj.vm2.lib;
 
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.LibFunction;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.TwoArgFunction;
-import org.luaj.vm2.lib.VarArgFunction;
-import org.luaj.vm2.lib.ZeroArgFunction;
 
 /**
  * Abstract base class for Java function implementations that take two arguments
@@ -41,14 +36,14 @@ import org.luaj.vm2.lib.ZeroArgFunction;
  * <p>
  * If more or less than three arguments are required, or variable argument or
  * variable return values, then use one of the related function
- * {@link org.luaj.vm2.lib.ZeroArgFunction}, {@link org.luaj.vm2.lib.OneArgFunction}, {@link org.luaj.vm2.lib.TwoArgFunction}, or
- * {@link org.luaj.vm2.lib.VarArgFunction}.
+ * {@link ZeroArgFunction}, {@link OneArgFunction}, {@link TwoArgFunction}, or
+ * {@link VarArgFunction}.
  * <p>
- * See {@link org.luaj.vm2.lib.LibFunction} for more information on implementation libraries and
+ * See {@link LibFunction} for more information on implementation libraries and
  * library functions.
  *
  * @see #call(LuaValue,LuaValue,LuaValue)
- * @see org.luaj.vm2.lib.LibFunction
+ * @see LibFunction
  * @see ZeroArgFunction
  * @see OneArgFunction
  * @see TwoArgFunction

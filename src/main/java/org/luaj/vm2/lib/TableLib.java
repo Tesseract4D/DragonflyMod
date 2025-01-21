@@ -24,9 +24,6 @@ package org.luaj.vm2.lib;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.LibFunction;
-import org.luaj.vm2.lib.TwoArgFunction;
-import org.luaj.vm2.lib.VarArgFunction;
 
 /**
  * Subclass of {@link LibFunction} which implements the lua standard
@@ -96,7 +93,7 @@ public class TableLib extends TwoArgFunction {
 	}
 
 	// "concat" (table [, sep [, i [, j]]]) -> string
-	static class concat extends org.luaj.vm2.lib.TableLibFunction {
+	static class concat extends TableLibFunction {
 		@Override
 		public LuaValue call(LuaValue list) {
 			return list.checktable().concat(EMPTYSTRING, 1, list.length());
@@ -119,7 +116,7 @@ public class TableLib extends TwoArgFunction {
 	}
 
 	// "insert" (table, [pos,] value)
-	static class insert extends org.luaj.vm2.lib.VarArgFunction {
+	static class insert extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			switch (args.narg()) {
@@ -145,7 +142,7 @@ public class TableLib extends TwoArgFunction {
 	}
 
 	// "pack" (...) -> table
-	static class pack extends org.luaj.vm2.lib.VarArgFunction {
+	static class pack extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			LuaValue t = tableOf(args, 1);
@@ -155,7 +152,7 @@ public class TableLib extends TwoArgFunction {
 	}
 
 	// "remove" (table [, pos]) -> removed-ele
-	static class remove extends org.luaj.vm2.lib.VarArgFunction {
+	static class remove extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			LuaTable table = args.checktable(1);
@@ -169,7 +166,7 @@ public class TableLib extends TwoArgFunction {
 	}
 
 	// "sort" (table [, comp])
-	static class sort extends org.luaj.vm2.lib.VarArgFunction {
+	static class sort extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			args.checktable(1).sort(args.isnil(2)? NIL: args.checkfunction(2));

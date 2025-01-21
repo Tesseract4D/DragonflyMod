@@ -33,34 +33,34 @@ abstract public class Visitor {
 	public void visit(Block block) {
 		visit(block.scope);
 		if (block.stats != null)
-			for (org.luaj.vm2.ast.Stat element : block.stats)
+			for (Stat element : block.stats)
 				element.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.Assign stat) {
+	public void visit(Stat.Assign stat) {
 		visitVars(stat.vars);
 		visitExps(stat.exps);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.Break breakstat) {
+	public void visit(Stat.Break breakstat) {
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.FuncCallStat stat) {
+	public void visit(Stat.FuncCallStat stat) {
 		stat.funccall.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.FuncDef stat) {
+	public void visit(Stat.FuncDef stat) {
 		stat.body.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.GenericFor stat) {
+	public void visit(Stat.GenericFor stat) {
 		visit(stat.scope);
 		visitNames(stat.names);
 		visitExps(stat.exps);
 		stat.block.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.IfThenElse stat) {
+	public void visit(Stat.IfThenElse stat) {
 		stat.ifexp.accept(this);
 		stat.ifblock.accept(this);
 		if (stat.elseifblocks != null)
@@ -72,17 +72,17 @@ abstract public class Visitor {
 			visit(stat.elseblock);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.LocalAssign stat) {
+	public void visit(Stat.LocalAssign stat) {
 		visitNames(stat.names);
 		visitExps(stat.values);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.LocalFuncDef stat) {
+	public void visit(Stat.LocalFuncDef stat) {
 		visit(stat.name);
 		stat.body.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.NumericFor stat) {
+	public void visit(Stat.NumericFor stat) {
 		visit(stat.scope);
 		visit(stat.name);
 		stat.initial.accept(this);
@@ -92,16 +92,16 @@ abstract public class Visitor {
 		stat.block.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.RepeatUntil stat) {
+	public void visit(Stat.RepeatUntil stat) {
 		stat.block.accept(this);
 		stat.exp.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.Return stat) {
+	public void visit(Stat.Return stat) {
 		visitExps(stat.values);
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.WhileDo stat) {
+	public void visit(Stat.WhileDo stat) {
 		stat.exp.accept(this);
 		stat.block.accept(this);
 	}
@@ -124,52 +124,52 @@ abstract public class Visitor {
 		field.rhs.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.AnonFuncDef exp) {
+	public void visit(Exp.AnonFuncDef exp) {
 		exp.body.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.BinopExp exp) {
+	public void visit(Exp.BinopExp exp) {
 		exp.lhs.accept(this);
 		exp.rhs.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.Constant exp) {
+	public void visit(Exp.Constant exp) {
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.FieldExp exp) {
+	public void visit(Exp.FieldExp exp) {
 		exp.lhs.accept(this);
 		visit(exp.name);
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.FuncCall exp) {
+	public void visit(Exp.FuncCall exp) {
 		exp.lhs.accept(this);
 		exp.args.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.IndexExp exp) {
+	public void visit(Exp.IndexExp exp) {
 		exp.lhs.accept(this);
 		exp.exp.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.MethodCall exp) {
+	public void visit(Exp.MethodCall exp) {
 		exp.lhs.accept(this);
 		visit(exp.name);
 		exp.args.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.NameExp exp) {
+	public void visit(Exp.NameExp exp) {
 		visit(exp.name);
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.ParensExp exp) {
+	public void visit(Exp.ParensExp exp) {
 		exp.exp.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.UnopExp exp) {
+	public void visit(Exp.UnopExp exp) {
 		exp.rhs.accept(this);
 	}
 
-	public void visit(org.luaj.vm2.ast.Exp.VarargsExp exp) {
+	public void visit(Exp.VarargsExp exp) {
 	}
 
 	public void visit(ParList pars) {
@@ -188,7 +188,7 @@ abstract public class Visitor {
 				var.accept(this);
 	}
 
-	public void visitExps(List<org.luaj.vm2.ast.Exp> exps) {
+	public void visitExps(List<Exp> exps) {
 		if (exps != null)
 			for (Exp exp : exps)
 				exp.accept(this);
@@ -209,7 +209,7 @@ abstract public class Visitor {
 	public void visit(NameScope scope) {
 	}
 
-	public void visit(org.luaj.vm2.ast.Stat.Goto gotostat) {
+	public void visit(Stat.Goto gotostat) {
 	}
 
 	public void visit(Stat.Label label) {

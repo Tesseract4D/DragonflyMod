@@ -23,11 +23,6 @@ package org.luaj.vm2.lib;
 
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.LibFunction;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.ThreeArgFunction;
-import org.luaj.vm2.lib.VarArgFunction;
-import org.luaj.vm2.lib.ZeroArgFunction;
 
 /**
  * Abstract base class for Java function implementations that take two arguments
@@ -41,8 +36,8 @@ import org.luaj.vm2.lib.ZeroArgFunction;
  * <p>
  * If more or less than two arguments are required, or variable argument or
  * variable return values, then use one of the related function
- * {@link ZeroArgFunction}, {@link org.luaj.vm2.lib.OneArgFunction}, {@link ThreeArgFunction}, or
- * {@link org.luaj.vm2.lib.VarArgFunction}.
+ * {@link ZeroArgFunction}, {@link OneArgFunction}, {@link ThreeArgFunction}, or
+ * {@link VarArgFunction}.
  * <p>
  * See {@link LibFunction} for more information on implementation libraries and
  * library functions.

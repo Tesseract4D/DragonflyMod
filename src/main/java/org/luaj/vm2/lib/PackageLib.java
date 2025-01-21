@@ -30,14 +30,9 @@ import org.luaj.vm2.LuaString;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.BaseLib;
-import org.luaj.vm2.lib.LibFunction;
-import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.TwoArgFunction;
-import org.luaj.vm2.lib.VarArgFunction;
 
 /**
- * Subclass of {@link org.luaj.vm2.lib.LibFunction} which implements the lua standard package and
+ * Subclass of {@link LibFunction} which implements the lua standard package and
  * module library functions.
  *
  * <h3>Lua Environment Variables</h3> The following variables are available to
@@ -85,7 +80,7 @@ import org.luaj.vm2.lib.VarArgFunction;
  * <h3>Limitations</h3> This library has been implemented to match as closely as
  * possible the behavior in the corresponding library in C. However, the default
  * filesystem search semantics are different and delegated to the bas library as
- * outlined in the {@link org.luaj.vm2.lib.BaseLib} and {@link org.luaj.vm2.lib.jse.JseBaseLib}
+ * outlined in the {@link BaseLib} and {@link org.luaj.vm2.lib.jse.JseBaseLib}
  * documentation.
  * <p>
  *
@@ -238,7 +233,7 @@ public class PackageLib extends TwoArgFunction {
 	 * If there is any error loading or running the module, or if it cannot find
 	 * any loader for the module, then require raises an error.
 	 */
-	public class require extends org.luaj.vm2.lib.OneArgFunction {
+	public class require extends OneArgFunction {
 		@Override
 		public LuaValue call(LuaValue arg) {
 			LuaString name = arg.checkstring();
@@ -279,7 +274,7 @@ public class PackageLib extends TwoArgFunction {
 		}
 	}
 
-	public static class loadlib extends org.luaj.vm2.lib.VarArgFunction {
+	public static class loadlib extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			args.checkstring(1);
@@ -287,7 +282,7 @@ public class PackageLib extends TwoArgFunction {
 		}
 	}
 
-	public class preload_searcher extends org.luaj.vm2.lib.VarArgFunction {
+	public class preload_searcher extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			LuaString name = args.checkstring(1);
@@ -296,7 +291,7 @@ public class PackageLib extends TwoArgFunction {
 		}
 	}
 
-	public class lua_searcher extends org.luaj.vm2.lib.VarArgFunction {
+	public class lua_searcher extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			LuaString name = args.checkstring(1);
@@ -324,7 +319,7 @@ public class PackageLib extends TwoArgFunction {
 		}
 	}
 
-	public class searchpath extends org.luaj.vm2.lib.VarArgFunction {
+	public class searchpath extends VarArgFunction {
 		@Override
 		public Varargs invoke(Varargs args) {
 			String name = args.checkjstring(1);

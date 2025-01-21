@@ -14,8 +14,6 @@ public class LuaHookClassVisitor {
     private static final ArrayList<String> methods = new ArrayList<>();
 
     public static byte[] visit() {
-        if (!DragonflyCoreMod.phase.equals("hook"))
-            throw new IllegalStateException();
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, LuaHookTransformer.luaHookClass.replace('.', '/'), null, "java/lang/Object", null);
 

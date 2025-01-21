@@ -1,8 +1,9 @@
 package cn.tesseract.dragonfly.lua;
 
-import cn.tesseract.dragonfly.event.LuaReloadEvent;
 import cn.tesseract.mycelium.MyceliumCoreMod;
 import cn.tesseract.mycelium.asm.*;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.event.FMLStateEvent;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -14,11 +15,13 @@ import java.util.List;
 import java.util.Map;
 
 public class LuaBridge {
-    private static final List<LuaFunctionContainer> hookList = new ArrayList<>();
+    private static final List<LuaHookContainer> hookList = new ArrayList<>();
 
     public static final Map<String, ArrayList<LuaValue>> eventList = new HashMap<>();
+    public static final ArrayList<LuaValue> reloadableEventList = new ArrayList<>();
 
     public static int hookIndex = 0;
+    public static boolean reloading = false;
 
     public static Object callLuaHook(int method, Object... a) {
         LuaValue[] b = new LuaValue[a.length];
@@ -29,34 +32,46 @@ public class LuaBridge {
     }
 
     public static void callLuaEvent(Object event) {
-        ArrayList<LuaValue> list;
-        if ((list = eventList.get(event.getClass().getName())) != null)
-            for (LuaValue func : list)
-                func.call(CoerceJavaToLua.coerce(event));
+        if (event instanceof FMLStateEvent e) {
+            callLuaEvent(Loader.instance().activeModContainer().getModId() + ":" + e.getModState().toString(), event);
+        } else
+            callLuaEvent(event.getClass().getName(), event);
     }
 
-    public static void registerLuaHook(LuaFunctionContainer hook) {
+    public static void callLuaEvent(String name, Object event) {
+        if (name.equals("reload"))
+            reloading = true;
+        ArrayList<LuaValue> list;
+        if ((list = eventList.get(name)) != null)
+            for (LuaValue func : list)
+                func.call(CoerceJavaToLua.coerce(event));
+        if (reloading)
+            reloading = false;
+    }
+
+    public static void registerLuaHook(LuaHookContainer hook) {
         if (hook.hookIndex != hookList.size())
             throw new IllegalStateException();
         hookList.add(hook);
     }
 
     public static void onReload() {
-        for (LuaFunctionContainer fc : hookList)
+        for (LuaHookContainer fc : hookList)
             fc.error = true;
-        LuaBridge.eventList.forEach((event, list) -> {
-            if (!event.equals(LuaReloadEvent.class.getName()))
-                list.clear();
-        });
+        for (ArrayList<LuaValue> list : LuaBridge.eventList.values())
+            list.removeAll(reloadableEventList);
+        reloadableEventList.clear();
     }
 
     public static void registerLuaHook(String name, LuaValue fn, LuaTable obj) {
         if (!fn.isfunction())
             throw new IllegalArgumentException(fn.tojstring() + " not a function!");
-        for (LuaFunctionContainer fc : hookList)
+        for (LuaHookContainer fc : hookList)
             if (fc.name.equals(name)) {
-                fc.func = fn;
-                fc.error = false;
+                if (fc.reloadable) {
+                    fc.func = fn;
+                    fc.error = false;
+                }
                 return;
             }
 
@@ -146,7 +161,7 @@ public class LuaBridge {
         else if (returnCondition == ReturnCondition.ON_TRUE) methodType = Type.BOOLEAN_TYPE;
         else methodType = Type.VOID_TYPE;
 
-        LuaBridge.registerLuaHook(new LuaFunctionContainer(name, fn, hookIndex, typeToClass(methodType)));
+        LuaBridge.registerLuaHook(new LuaHookContainer(name, fn, hookIndex, typeToClass(methodType), reloading));
 
         if (returnCondition != ReturnCondition.NEVER) {
             Object primitiveConstant = map.get("returnConstant");
@@ -198,7 +213,7 @@ public class LuaBridge {
         LuaHookClassVisitor.createMethod(hookMethod + hookIndex++, hookDesc.toString() + methodType.getDescriptor());
 
         if (map.containsKey("returnAnotherMethod")) {
-            LuaBridge.registerLuaHook(new LuaFunctionContainer("__" + name, (LuaValue) map.get("returnAnotherMethod"), hookIndex, typeToClass(targetReturnType)));
+            LuaBridge.registerLuaHook(new LuaHookContainer("__" + name, (LuaValue) map.get("returnAnotherMethod"), hookIndex, typeToClass(targetReturnType), reloading));
             String n = hookMethod + hookIndex++;
             LuaHookClassVisitor.createMethod(n, hookDesc.toString() + targetReturnType.getDescriptor());
         }

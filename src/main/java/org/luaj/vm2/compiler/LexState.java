@@ -120,7 +120,7 @@ public class LexState extends Constants {
 	int               lastline;                  /* line of last token `consumed' */
 	final Token       t         = new Token();   /* current token */
 	final Token       lookahead = new Token();   /* look ahead token */
-	FuncState fs;                        /* `FuncState' is private to the parser */
+	FuncState         fs;                        /* `FuncState' is private to the parser */
 	LuaC.CompileState L;
 	InputStream       z;                         /* input stream */
 	char[]            buff;                      /* buffer for tokens */
@@ -813,7 +813,7 @@ public class LexState extends Constants {
 	/*----------------------------------------------------------------------
 	name		args	description
 	------------------------------------------------------------------------*/
-
+	
 	void anchor_token () {
 		/* last token from outer function must be EOF */
 		_assert(fs != null || t.token == TK_EOF);

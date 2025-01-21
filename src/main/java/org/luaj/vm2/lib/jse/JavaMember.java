@@ -23,11 +23,7 @@ package org.luaj.vm2.lib.jse;
 
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 import org.luaj.vm2.lib.jse.CoerceLuaToJava.Coercion;
-import org.luaj.vm2.lib.jse.JavaConstructor;
-import org.luaj.vm2.lib.jse.JavaMethod;
 
 /**
  * Java method or constructor.
@@ -36,7 +32,7 @@ import org.luaj.vm2.lib.jse.JavaMethod;
  * compatibility and java varargs handling.
  * <p>
  * This class is not used directly. It is an abstract base class for
- * {@link org.luaj.vm2.lib.jse.JavaConstructor} and {@link org.luaj.vm2.lib.jse.JavaMethod}.
+ * {@link JavaConstructor} and {@link JavaMethod}.
  *
  * @see JavaConstructor
  * @see JavaMethod

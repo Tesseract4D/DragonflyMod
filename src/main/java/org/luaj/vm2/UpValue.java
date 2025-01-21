@@ -21,10 +21,6 @@
 ******************************************************************************/
 package org.luaj.vm2;
 
-import org.luaj.vm2.LuaClosure;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Prototype;
-
 /**
  * Upvalue used with Closure formulation
  * <p>

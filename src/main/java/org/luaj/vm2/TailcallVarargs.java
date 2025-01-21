@@ -22,7 +22,7 @@
 package org.luaj.vm2;
 
 /**
- * Subclass of {@link org.luaj.vm2.Varargs} that represents a lua tail call in a Java library
+ * Subclass of {@link Varargs} that represents a lua tail call in a Java library
  * function execution environment.
  * <p>
  * Since Java doesn't have direct support for tail calls, any lua function whose
@@ -39,18 +39,18 @@ package org.luaj.vm2;
  * @see Prototype
  * @see org.luaj.vm2.luajc.LuaJC
  */
-public class TailcallVarargs extends org.luaj.vm2.Varargs {
+public class TailcallVarargs extends Varargs {
 
 	private LuaValue func;
-	private org.luaj.vm2.Varargs args;
-	private org.luaj.vm2.Varargs result;
+	private Varargs  args;
+	private Varargs  result;
 
-	public TailcallVarargs(LuaValue f, org.luaj.vm2.Varargs args) {
+	public TailcallVarargs(LuaValue f, Varargs args) {
 		this.func = f;
 		this.args = args;
 	}
 
-	public TailcallVarargs(LuaValue object, LuaValue methodname, org.luaj.vm2.Varargs args) {
+	public TailcallVarargs(LuaValue object, LuaValue methodname, Varargs args) {
 		this.func = object.get(methodname);
 		this.args = LuaValue.varargsOf(object, args);
 	}
@@ -59,9 +59,9 @@ public class TailcallVarargs extends org.luaj.vm2.Varargs {
 	public boolean isTailcall() { return true; }
 
 	@Override
-	public org.luaj.vm2.Varargs eval() {
+	public Varargs eval() {
 		while ( result == null ) {
-			org.luaj.vm2.Varargs r = func.onInvoke(args);
+			Varargs r = func.onInvoke(args);
 			if (r.isTailcall()) {
 				TailcallVarargs t = (TailcallVarargs) r;
 				func = t.func;

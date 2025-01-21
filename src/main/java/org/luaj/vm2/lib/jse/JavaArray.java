@@ -27,8 +27,6 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaUserdata;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 
 /**
  * LuaValue that represents a Java instance of array type.
@@ -36,10 +34,10 @@ import org.luaj.vm2.lib.jse.CoerceLuaToJava;
  * Can get elements by their integer key index, as well as the length.
  * <p>
  * This class is not used directly. It is returned by calls to
- * {@link org.luaj.vm2.lib.jse.CoerceJavaToLua#coerce(Object)} when an array is supplied.
+ * {@link CoerceJavaToLua#coerce(Object)} when an array is supplied.
  *
- * @see org.luaj.vm2.lib.jse.CoerceJavaToLua
- * @see org.luaj.vm2.lib.jse.CoerceLuaToJava
+ * @see CoerceJavaToLua
+ * @see CoerceLuaToJava
  */
 public class JavaArray extends LuaUserdata {
 

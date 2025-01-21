@@ -484,9 +484,9 @@ public class OsLib extends TwoArgFunction {
 	 * @return long value for the time
 	 */
 	protected long time(LuaTable table) {
-		Date d;
+		java.util.Date d;
 		if (table == null) {
-			d = new Date();
+			d = new java.util.Date();
 		} else {
 			Calendar c = Calendar.getInstance();
 			c.set(Calendar.YEAR, table.get("year").checkint());

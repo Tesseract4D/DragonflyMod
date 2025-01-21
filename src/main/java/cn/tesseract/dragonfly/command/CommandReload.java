@@ -26,7 +26,7 @@ public class CommandReload extends CommandBase {
 
     public void processCommand(ICommandSender sender, String[] args) {
         LuaBridge.onReload();
-        LuaBridge.callLuaEvent(new LuaReloadEvent(false));
+        LuaBridge.callLuaEvent("reload",new LuaReloadEvent(false));
         sender.addChatMessage(new ChatComponentTranslation("commands.reload.success"));
     }
 }

@@ -10,7 +10,7 @@
 *
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-*
+* 
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -93,7 +93,7 @@ public class StringLib extends TwoArgFunction {
 		string.set("reverse", new reverse());
 		string.set("sub", new sub());
 		string.set("upper", new upper());
-
+		
 		env.set("string", string);
 		if (!env.get("package").isnil()) env.get("package").get("loaded").set("string", string);
 		if (LuaString.s_metatable == null) {
@@ -101,16 +101,16 @@ public class StringLib extends TwoArgFunction {
 		}
 		return string;
 	}
-
+	
 	/**
 	 * string.byte (s [, i [, j]])
-	 *
+	 * 
 	 * Returns the internal numerical codes of the
 	 * characters s[i], s[i+1], ..., s[j]. The default value for i is 1; the
 	 * default value for j is i.
-	 *
+	 * 
 	 * Note that numerical codes are not necessarily portable across platforms.
-	 *
+	 * 
 	 * @param args the calling args
 	 */
 	static final class _byte extends VarArgFunction {
@@ -135,13 +135,13 @@ public class StringLib extends TwoArgFunction {
 
 	/**
 	 * string.char (...)
-	 *
+	 * 
 	 * Receives zero or more integers. Returns a string with length equal
 	 * to the number of arguments, in which each character has the internal
 	 * numerical code equal to its corresponding argument.
-	 *
+	 * 
 	 * Note that numerical codes are not necessarily portable across platforms.
-	 *
+	 * 
 	 * @param args the calling VM
 	 */
 	static final class _char extends VarArgFunction {
@@ -156,16 +156,16 @@ public class StringLib extends TwoArgFunction {
 			return LuaString.valueUsing( bytes );
 		}
 	}
-
+		
 	/**
 	 * string.dump (function[, stripDebug])
-	 *
+	 * 
 	 * Returns a string containing a binary representation of the given function,
 	 * so that a later loadstring on this string returns a copy of the function.
 	 * function must be a Lua function without upvalues.
 	 * Boolean param stripDebug - true to strip debugging info, false otherwise.
 	 * The default value for stripDebug is true.
-	 *
+	 * 
 	 * TODO: port dumping code as optional add-on
 	 */
 	static final class dump extends VarArgFunction {
@@ -183,7 +183,7 @@ public class StringLib extends TwoArgFunction {
 
 	/**
 	 * string.find (s, pattern [, init [, plain]])
-	 *
+	 * 
 	 * Looks for the first match of pattern in the string s.
 	 * If it finds a match, then find returns the indices of s
 	 * where this occurrence starts and ends; otherwise, it returns nil.
@@ -193,7 +193,7 @@ public class StringLib extends TwoArgFunction {
 	 * so the function does a plain "find substring" operation,
 	 * with no characters in pattern being considered "magic".
 	 * Note that if plain is given, then init must be given as well.
-	 *
+	 * 
 	 * If the pattern has captures, then in a successful match the captured values
 	 * are also returned, after the two indices.
 	 */
@@ -205,7 +205,7 @@ public class StringLib extends TwoArgFunction {
 
 	/**
 	 * string.format (formatstring, ...)
-	 *
+	 * 
 	 * Returns a formatted version of its variable number of arguments following
 	 * the description given in its first argument (which must be a string).
 	 * The format string follows the same rules as the printf family of standard C functions.
@@ -219,10 +219,10 @@ public class StringLib extends TwoArgFunction {
 	 * will produce the string:
 	 *    "a string with \"quotes\" and \
 	 *    new line"
-	 *
+	 * 
 	 * The options c, d, E, e, f, g, G, i, o, u, X, and x all expect a number as argument,
 	 * whereas q and s expect a string.
-	 *
+	 * 
 	 * This function does not accept string values containing embedded zeros,
 	 * except as arguments to the q option.
 	 */
@@ -233,7 +233,7 @@ public class StringLib extends TwoArgFunction {
 			Buffer result = new Buffer(n);
 			int arg = 1;
 			int c;
-
+			
 			for ( int i = 0; i < n; ) {
 				switch ( c = fmt.luaByte( i++ ) ) {
 				case '\n':
@@ -338,11 +338,11 @@ public class StringLib extends TwoArgFunction {
 					}
 				}
 			}
-
+			
 			return result.tostring();
 		}
 	}
-
+	
 	static void addquoted(Buffer buf, LuaString s) {
 		int c;
 		buf.append( (byte) '"' );
@@ -370,30 +370,30 @@ public class StringLib extends TwoArgFunction {
 		}
 		buf.append( (byte) '"' );
 	}
-
+	
 	private static final String FLAGS = "-+ #0";
-
+	
 	class FormatDesc {
-
+		
 		private boolean leftAdjust;
 		private boolean zeroPad;
 		private boolean explicitPlus;
 		private boolean space;
 		private boolean alternateForm;
 		private static final int MAX_FLAGS = 5;
-
+		
 		private int width;
 		int precision;
-
+		
 		public final int conversion;
 		public final int length;
-
+		
 		public final String src;
-
+		
 		public FormatDesc(Varargs args, LuaString strfrmt, final int start) {
 			int p = start, n = strfrmt.length();
 			int c = 0;
-
+			
 			boolean moreFlags = true;
 			while ( moreFlags ) {
 				switch ( c = ( (p < n) ? strfrmt.luaByte( p++ ) : 0 ) ) {
@@ -407,7 +407,7 @@ public class StringLib extends TwoArgFunction {
 			}
 			if ( p - start > MAX_FLAGS )
 				error("invalid format (repeated flags)");
-
+			
 			width = -1;
 			if ( Character.isDigit( (char)c ) ) {
 				width = c - '0';
@@ -446,7 +446,7 @@ public class StringLib extends TwoArgFunction {
 			length = p - start;
 			src = strfrmt.substring(start - 1, p).tojstring();
 		}
-
+		
 		public void format(Buffer buf, byte c) {
 			if (!leftAdjust)
 				pad(buf, ' ', width - 1);
@@ -456,10 +456,10 @@ public class StringLib extends TwoArgFunction {
 			if (leftAdjust)
 				pad(buf, ' ', width - 1);
 		}
-
+		
 		public void format(Buffer buf, long number) {
 			String digits;
-
+			
 			if ( number == 0 && precision == 0 ) {
 				digits = "";
 			} else {
@@ -480,32 +480,32 @@ public class StringLib extends TwoArgFunction {
 				if ( conversion == 'X' )
 					digits = digits.toUpperCase();
 			}
-
+			
 			int minwidth = digits.length();
 			int ndigits = minwidth;
 			int nzeros;
 
 			boolean allowPlusSpace = conversion == 'd' || conversion == 'i';
-
+			
 			if ( number < 0 ) {
 				ndigits--;
 			} else if ( allowPlusSpace && (explicitPlus || space) ) {
 				minwidth++;
 			}
-
+			
 			if ( precision > ndigits )
 				nzeros = precision - ndigits;
 			else if ( precision == -1 && zeroPad && width > minwidth )
 				nzeros = width - minwidth;
 			else
 				nzeros = 0;
-
+			
 			minwidth += nzeros;
 			int nspaces = width > minwidth ? width - minwidth : 0;
-
+			
 			if ( !leftAdjust )
 				pad( buf, ' ', nspaces );
-
+			
 			if ( number < 0 ) {
 				if ( nzeros > 0 ) {
 					buf.append( (byte)'-' );
@@ -533,13 +533,13 @@ public class StringLib extends TwoArgFunction {
 
 			if ( nzeros > 0 )
 				pad( buf, '0', nzeros );
-
+			
 			buf.append( digits );
-
+			
 			if ( leftAdjust )
 				pad( buf, ' ', nspaces );
 		}
-
+		
 		public void format(Buffer buf, double x) {
 			// TODO: Java does not support alternateForm with 'g'
 			String sFormat = "%";
@@ -560,7 +560,7 @@ public class StringLib extends TwoArgFunction {
 			sFormat += ((char) conversion);
 			buf.append( StringLib.this.format(sFormat, x) );
 		}
-
+		
 		public void format(Buffer buf, LuaString s) {
 			int nullindex = s.indexOf( (byte)'\0', 0 );
 			if ( nullindex != -1 )
@@ -576,31 +576,31 @@ public class StringLib extends TwoArgFunction {
 			if (leftAdjust)
 				pad(buf, ' ', width - newLength);
 		}
-
+		
 		public final void pad(Buffer buf, char c, int n) {
 			byte b = (byte)c;
 			while ( n-- > 0 )
 				buf.append(b);
 		}
 	}
-
+	
 	protected String format(String src, double x) {
 		return String.valueOf(x);
 	}
-
+	
 	/**
 	 * string.gmatch (s, pattern)
-	 *
+	 * 
 	 * Returns an iterator function that, each time it is called, returns the next captures
 	 * from pattern over string s. If pattern specifies no captures, then the
 	 * whole match is produced in each call.
-	 *
+	 * 
 	 * As an example, the following loop
 	 *   s = "hello world from Lua"
 	 *   for w in string.gmatch(s, "%a+") do
 	 *      print(w)
 	 *   end
-	 *
+	 * 
 	 * will iterate over all the words from string s, printing one per line.
 	 * The next example collects all pairs key=value from the given string into a table:
 	 *   t = {}
@@ -645,34 +645,34 @@ public class StringLib extends TwoArgFunction {
 		}
 	}
 
-
+	
 	/**
 	 * string.gsub (s, pattern, repl [, n])
 	 * Returns a copy of s in which all (or the first n, if given) occurrences of the
 	 * pattern have been replaced by a replacement string specified by repl, which
 	 * may be a string, a table, or a function. gsub also returns, as its second value,
 	 * the total number of matches that occurred.
-	 *
+	 * 
 	 * If repl is a string, then its value is used for replacement.
 	 * The character % works as an escape character: any sequence in repl of the form %n,
 	 * with n between 1 and 9, stands for the value of the n-th captured substring (see below).
 	 * The sequence %0 stands for the whole match. The sequence %% stands for a single %.
-	 *
+	 * 
 	 * If repl is a table, then the table is queried for every match, using the first capture
 	 * as the key; if the pattern specifies no captures, then the whole match is used as the key.
-	 *
+	 * 
 	 * If repl is a function, then this function is called every time a match occurs,
 	 * with all captured substrings passed as arguments, in order; if the pattern specifies
 	 * no captures, then the whole match is passed as a sole argument.
-	 *
+	 * 
 	 * If the value returned by the table query or by the function call is a string or a number,
 	 * then it is used as the replacement string; otherwise, if it is false or nil,
 	 * then there is no replacement (that is, the original match is kept in the string).
-	 *
+	 * 
 	 * Here are some examples:
 	 * 	     x = string.gsub("hello world", "(%w+)", "%1 %1")
 	 * 	     --> x="hello hello world world"
-	 *
+	 * 
 	 *	     x = string.gsub("hello world", "%w+", "%0 %0", 1)
 	 *	     --> x="hello hello world"
 	 *
@@ -702,10 +702,10 @@ public class StringLib extends TwoArgFunction {
 			if (max_s < 0)
 				max_s = srclen+1;
 			final boolean anchor = p.length() > 0 && p.charAt( 0 ) == '^';
-
+			
 			Buffer lbuf = new Buffer( srclen );
 			MatchState ms = new MatchState( args, src, p );
-
+			
 			int soffset = 0;
 			int n = 0;
 			while ( n < max_s ) {
@@ -725,14 +725,14 @@ public class StringLib extends TwoArgFunction {
 			return varargsOf(lbuf.tostring(), valueOf(n));
 		}
 	}
-
+	
 	/**
 	 * string.len (s)
-	 *
+	 * 
 	 * Receives a string and returns its length. The empty string "" has length 0.
 	 * Embedded zeros are counted, so "a\000bc\000" has length 5.
 	 */
-	static final class len extends org.luaj.vm2.lib.OneArgFunction {
+	static final class len extends OneArgFunction {
 		public LuaValue call(LuaValue arg) {
 			return arg.checkstring().len();
 		}
@@ -740,12 +740,12 @@ public class StringLib extends TwoArgFunction {
 
 	/**
 	 * string.lower (s)
-	 *
+	 * 
 	 * Receives a string and returns a copy of this string with all uppercase letters
 	 * changed to lowercase. All other characters are left unchanged.
 	 * The definition of what an uppercase letter is depends on the current locale.
 	 */
-	static final class lower extends org.luaj.vm2.lib.OneArgFunction {
+	static final class lower extends OneArgFunction {
 		public LuaValue call(LuaValue arg) {
 			return valueOf( arg.checkjstring().toLowerCase() );
 		}
@@ -753,7 +753,7 @@ public class StringLib extends TwoArgFunction {
 
 	/**
 	 * string.match (s, pattern [, init])
-	 *
+	 * 
 	 * Looks for the first match of pattern in the string s. If it finds one,
 	 * then match returns the captures from the pattern; otherwise it returns
 	 * nil. If pattern specifies no captures, then the whole match is returned.
@@ -799,10 +799,10 @@ public class StringLib extends TwoArgFunction {
 
 	/**
 	 * string.reverse (s)
-	 *
+	 * 
 	 * Returns a string that is the string s reversed.
 	 */
-	static final class reverse extends org.luaj.vm2.lib.OneArgFunction {
+	static final class reverse extends OneArgFunction {
 		public LuaValue call(LuaValue arg) {
 			LuaString s = arg.checkstring();
 			int n = s.length();
@@ -815,7 +815,7 @@ public class StringLib extends TwoArgFunction {
 
 	/**
 	 * string.sub (s, i [, j])
-	 *
+	 * 
 	 * Returns the substring of s that starts at i and continues until j;
 	 * i and j may be negative. If j is absent, then it is assumed to be equal to -1
 	 * (which is the same as the string length). In particular, the call
@@ -828,15 +828,15 @@ public class StringLib extends TwoArgFunction {
 		public Varargs invoke(Varargs args) {
 			final LuaString s = args.checkstring( 1 );
 			final int l = s.length();
-
+			
 			int start = posrelat( args.checkint( 2 ), l );
 			int end = posrelat( args.optint( 3, -1 ), l );
-
+			
 			if ( start < 1 )
 				start = 1;
 			if ( end > l )
 				end = l;
-
+			
 			if ( start <= end ) {
 				return s.substring( start-1 , end );
 			} else {
@@ -844,10 +844,10 @@ public class StringLib extends TwoArgFunction {
 			}
 		}
 	}
-
+	
 	/**
 	 * string.upper (s)
-	 *
+	 * 
 	 * Receives a string and returns a copy of this string with all lowercase letters
 	 * changed to uppercase. All other characters are left unchanged.
 	 * The definition of what a lowercase letter is depends on the current locale.
@@ -857,7 +857,7 @@ public class StringLib extends TwoArgFunction {
 			return valueOf(arg.checkjstring().toUpperCase());
 		}
 	}
-
+	
 	/**
 	 * This utility method implements both string.find and string.match.
 	 */
@@ -865,15 +865,15 @@ public class StringLib extends TwoArgFunction {
 		LuaString s = args.checkstring( 1 );
 		LuaString pat = args.checkstring( 2 );
 		int init = args.optint( 3, 1 );
-
+		
 		if ( init > 0 ) {
 			init = Math.min( init - 1, s.length() );
 		} else if ( init < 0 ) {
 			init = Math.max( 0, s.length() + init );
 		}
-
+		
 		boolean fastMatch = find && ( args.arg(4).toboolean() || pat.indexOfAny( SPECIALS ) == -1 );
-
+		
 		if ( fastMatch ) {
 			int result = s.indexOf( pat, init );
 			if ( result != -1 ) {
@@ -881,14 +881,14 @@ public class StringLib extends TwoArgFunction {
 			}
 		} else {
 			MatchState ms = new MatchState( args, s, pat );
-
+			
 			boolean anchor = false;
 			int poff = 0;
 			if ( pat.length() > 0 && pat.luaByte( 0 ) == '^' ) {
 				anchor = true;
 				poff = 1;
 			}
-
+			
 			int soff = init;
 			do {
 				int res;
@@ -904,22 +904,22 @@ public class StringLib extends TwoArgFunction {
 		}
 		return NIL;
 	}
-
+	
 	static int posrelat( int pos, int len ) {
 		return ( pos >= 0 ) ? pos : len + pos + 1;
 	}
-
+	
 	// Pattern matching implementation
-
+	
 	private static final int L_ESC = '%';
 	private static final LuaString SPECIALS = valueOf("^$*+?.([%-");
 	private static final int MAX_CAPTURES = 32;
-
+	
 	private static final int MAXCCALLS = 200;
-
+	
 	private static final int CAP_UNFINISHED = -1;
 	private static final int CAP_POSITION = -2;
-
+	
 	private static final byte MASK_ALPHA		= 0x01;
 	private static final byte MASK_LOWERCASE	= 0x02;
 	private static final byte MASK_UPPERCASE	= 0x04;
@@ -928,12 +928,12 @@ public class StringLib extends TwoArgFunction {
 	private static final byte MASK_SPACE		= 0x20;
 	private static final byte MASK_CONTROL		= 0x40;
 	private static final byte MASK_HEXDIGIT		= (byte)0x80;
-
+	
 	static final byte[] CHAR_TABLE;
-
+	
 	static {
 		CHAR_TABLE = new byte[256];
-
+		
 		for ( int i = 0; i < 128; ++i ) {
 			final char c = (char) i;
 			CHAR_TABLE[i] = (byte)( ( Character.isDigit( c ) ? MASK_DIGIT : 0 ) |
@@ -950,7 +950,7 @@ public class StringLib extends TwoArgFunction {
 				CHAR_TABLE[i] |= MASK_ALPHA;
 			}
 		}
-
+		
 		CHAR_TABLE[' '] = MASK_SPACE;
 		CHAR_TABLE['\r'] |= MASK_SPACE;
 		CHAR_TABLE['\n'] |= MASK_SPACE;
@@ -958,7 +958,7 @@ public class StringLib extends TwoArgFunction {
 		CHAR_TABLE[0x0B /* '\v' */ ] |= MASK_SPACE;
 		CHAR_TABLE['\f'] |= MASK_SPACE;
 	};
-
+	
 	static class MatchState {
 		int matchdepth;  /* control for recursive depth (to avoid C stack overflow) */
 		final LuaString s;
@@ -967,7 +967,7 @@ public class StringLib extends TwoArgFunction {
 		int level;
 		int[] cinit;
 		int[] clen;
-
+		
 		MatchState( Varargs args, LuaString s, LuaString pattern ) {
 			this.s = s;
 			this.p = pattern;
@@ -977,12 +977,12 @@ public class StringLib extends TwoArgFunction {
 			this.clen = new int[ MAX_CAPTURES ];
 			this.matchdepth = MAXCCALLS;
 		}
-
+		
 		void reset() {
 			level = 0;
 			this.matchdepth = MAXCCALLS;
 		}
-
+		
 		private void add_s( Buffer lbuf, LuaString news, int soff, int e ) {
 			int l = news.length();
 			for ( int i = 0; i < l; ++i ) {
@@ -1008,28 +1008,28 @@ public class StringLib extends TwoArgFunction {
 				}
 			}
 		}
-
+		
 		public void add_value( Buffer lbuf, int soffset, int end, LuaValue repl ) {
 			switch ( repl.type() ) {
 			case LuaValue.TSTRING:
 			case LuaValue.TNUMBER:
 				add_s( lbuf, repl.strvalue(), soffset, end );
 				return;
-
+				
 			case LuaValue.TFUNCTION:
 				repl = repl.invoke( push_captures( true, soffset, end ) ).arg1();
 				break;
-
+				
 			case LuaValue.TTABLE:
 				// Need to call push_onecapture here for the error checking
 				repl = repl.get( push_onecapture( 0, soffset, end ) );
 				break;
-
+				
 			default:
 				error( "bad argument: string/function/table expected" );
 				return;
 			}
-
+			
 			if ( !repl.toboolean() ) {
 				repl = s.substring( soffset, end );
 			} else if ( ! repl.isstring() ) {
@@ -1037,7 +1037,7 @@ public class StringLib extends TwoArgFunction {
 			}
 			lbuf.append( repl.strvalue() );
 		}
-
+		
 		Varargs push_captures( boolean wholeMatch, int soff, int end ) {
 			int nlevels = ( this.level == 0 && wholeMatch ) ? 1 : this.level;
 			switch ( nlevels ) {
@@ -1049,7 +1049,7 @@ public class StringLib extends TwoArgFunction {
 				v[i] = push_onecapture( i, soff, end );
 			return varargsOf(v);
 		}
-
+		
 		private LuaValue push_onecapture( int i, int soff, int end ) {
 			if ( i >= this.level ) {
 				if ( i == 0 ) {
@@ -1070,7 +1070,7 @@ public class StringLib extends TwoArgFunction {
 				}
 			}
 		}
-
+		
 		private int check_capture( int l ) {
 			l -= '1';
 			if ( l < 0 || l >= level || this.clen[l] == CAP_UNFINISHED ) {
@@ -1078,7 +1078,7 @@ public class StringLib extends TwoArgFunction {
 			}
 			return l;
 		}
-
+		
 		private int capture_to_close() {
 			int level = this.level;
 			for ( level--; level >= 0; level-- )
@@ -1087,7 +1087,7 @@ public class StringLib extends TwoArgFunction {
 			error("invalid pattern capture");
 			return 0;
 		}
-
+		
 		int classend( int poffset ) {
 			switch ( p.luaByte( poffset++ ) ) {
 			case L_ESC:
@@ -1095,7 +1095,7 @@ public class StringLib extends TwoArgFunction {
 					error( "malformed pattern (ends with '%')" );
 				}
 				return poffset + 1;
-
+				
 			case '[':
 				if ( poffset != p.length() && p.luaByte( poffset ) == '^' ) poffset++;
 				do {
@@ -1110,11 +1110,11 @@ public class StringLib extends TwoArgFunction {
 				return poffset;
 			}
 		}
-
+		
 		static boolean match_class( int c, int cl ) {
 			final char lcl = Character.toLowerCase( (char) cl );
 			int cdata = CHAR_TABLE[c];
-
+			
 			boolean res;
 			switch ( lcl ) {
 			case 'a': res = ( cdata & MASK_ALPHA ) != 0; break;
@@ -1132,7 +1132,7 @@ public class StringLib extends TwoArgFunction {
 			}
 			return ( lcl == cl ) ? res : !res;
 		}
-
+		
 		boolean matchbracketclass( int c, int poff, int ec ) {
 			boolean sig = true;
 			if ( p.luaByte( poff + 1 ) == '^' ) {
@@ -1154,7 +1154,7 @@ public class StringLib extends TwoArgFunction {
 			}
 			return !sig;
 		}
-
+		
 		boolean singlematch( int c, int poff, int ep ) {
 			switch ( p.luaByte( poff ) ) {
 			case '.': return true;
@@ -1163,7 +1163,7 @@ public class StringLib extends TwoArgFunction {
 			default: return p.luaByte( poff ) == c;
 			}
 		}
-
+		
 		/**
 		 * Perform pattern matching. If there is a match, returns offset into s
 		 * where match ends, otherwise returns -1.
@@ -1225,7 +1225,7 @@ public class StringLib extends TwoArgFunction {
 					int ep = classend( poffset );
 					boolean m = soffset < s.length() && singlematch( s.luaByte( soffset ), poffset, ep );
 					int pc = ( ep < p.length() ) ? p.luaByte( ep ) : '\0';
-
+					
 					switch ( pc ) {
 					case '?':
 						int res;
@@ -1251,7 +1251,7 @@ public class StringLib extends TwoArgFunction {
 				matchdepth++;
 			}
 		}
-
+		
 		int max_expand( int soff, int poff, int ep ) {
 			int i = 0;
 			while ( soff + i < s.length() &&
@@ -1265,7 +1265,7 @@ public class StringLib extends TwoArgFunction {
 			}
 			return -1;
 		}
-
+		
 		int min_expand( int soff, int poff, int ep ) {
 			for ( ;; ) {
 				int res = match( soff, ep + 1 );
@@ -1276,7 +1276,7 @@ public class StringLib extends TwoArgFunction {
 				else return -1;
 			}
 		}
-
+		
 		int start_capture( int soff, int poff, int what ) {
 			int res;
 			int level = this.level;
@@ -1290,7 +1290,7 @@ public class StringLib extends TwoArgFunction {
 				this.level--;
 			return res;
 		}
-
+		
 		int end_capture( int soff, int poff ) {
 			int l = capture_to_close();
 			int res;
@@ -1299,7 +1299,7 @@ public class StringLib extends TwoArgFunction {
 				clen[l] = CAP_UNFINISHED;
 			return res;
 		}
-
+		
 		int match_capture( int soff, int l ) {
 			l = check_capture( l );
 			int len = clen[ l ];
@@ -1309,7 +1309,7 @@ public class StringLib extends TwoArgFunction {
 			else
 				return -1;
 		}
-
+		
 		int matchbalance( int soff, int poff ) {
 			final int plen = p.length();
 			if ( poff == plen || poff + 1 == plen ) {

@@ -29,11 +29,9 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
-import org.luaj.vm2.server.Launcher;
-import org.luaj.vm2.server.LuajClassLoader;
 
 /**
- * Default {@link org.luaj.vm2.server.Launcher} instance that creates standard globals and runs the
+ * Default {@link Launcher} instance that creates standard globals and runs the
  * supplied scripts with chunk name 'main'.
  * <P>
  * Arguments are coerced into lua using {@link CoerceJavaToLua#coerce(Object)}.
@@ -41,9 +39,9 @@ import org.luaj.vm2.server.LuajClassLoader;
  * Return values with simple types are coerced into Java simple types. Tables,
  * threads, and functions are returned as lua objects.
  *
- * @see org.luaj.vm2.server.Launcher
- * @see org.luaj.vm2.server.LuajClassLoader
- * @see org.luaj.vm2.server.LuajClassLoader#NewLauncher()
+ * @see Launcher
+ * @see LuajClassLoader
+ * @see LuajClassLoader#NewLauncher()
  * @see LuajClassLoader#NewLauncher(Class)
  * @since luaj 3.0.1
  */

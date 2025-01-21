@@ -34,7 +34,7 @@ import org.luaj.vm2.Prototype;
 import org.luaj.vm2.compiler.LuaC;
 
 /**
- * Implementation of {@link Globals.Compiler} which does direct
+ * Implementation of {@link org.luaj.vm2.Globals.Compiler} which does direct
  * lua-to-java-bytecode compiling.
  * <p>
  * By default, when using {@link org.luaj.vm2.lib.jse.JsePlatform} or
@@ -61,7 +61,7 @@ import org.luaj.vm2.compiler.LuaC;
  *
  * @see Globals#compiler
  * @see #install(Globals)
- * @see LuaC
+ * @see org.luaj.vm2.compiler.LuaC
  * @see LuaValue
  */
 public class LuaJC implements Globals.Loader {
@@ -96,7 +96,7 @@ public class LuaJC implements Globals.Loader {
 		throws IOException {
 		final String luaname = toStandardLuaFileName(filename);
 		final Hashtable h = new Hashtable();
-		final org.luaj.vm2.luajc.JavaGen gen = new org.luaj.vm2.luajc.JavaGen(p, classname, luaname, genmain);
+		final JavaGen gen = new JavaGen(p, classname, luaname, genmain);
 		insert(h, gen);
 		return h;
 	}
@@ -111,7 +111,7 @@ public class LuaJC implements Globals.Loader {
 	public LuaFunction load(Prototype p, String name, LuaValue globals) throws IOException {
 		String luaname = toStandardLuaFileName(name);
 		String classname = toStandardJavaClassName(luaname);
-		org.luaj.vm2.luajc.JavaLoader loader = new JavaLoader();
+		JavaLoader loader = new JavaLoader();
 		return loader.load(p, classname, luaname, globals);
 	}
 

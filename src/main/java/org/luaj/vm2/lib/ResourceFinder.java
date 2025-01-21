@@ -24,7 +24,6 @@ package org.luaj.vm2.lib;
 import java.io.InputStream;
 
 import org.luaj.vm2.Globals;
-import org.luaj.vm2.lib.BaseLib;
 
 /**
  * Interface for opening application resource files such as scripts sources.
@@ -32,7 +31,7 @@ import org.luaj.vm2.lib.BaseLib;
  * This is used by required to load files that are part of the application, and
  * implemented by BaseLib for both the Jme and Jse platforms.
  * <p>
- * The Jme version of base lib {@link org.luaj.vm2.lib.BaseLib} implements {@link Globals#finder}
+ * The Jme version of base lib {@link BaseLib} implements {@link Globals#finder}
  * via {@link Class#getResourceAsStream(String)}, while the Jse version
  * {@link org.luaj.vm2.lib.jse.JseBaseLib} implements it using
  * {@link java.io.File#File(String)}.
@@ -51,7 +50,7 @@ public interface ResourceFinder {
 	/**
 	 * Try to open a file, or return null if not found.
 	 *
-	 * @see BaseLib
+	 * @see org.luaj.vm2.lib.BaseLib
 	 * @see org.luaj.vm2.lib.jse.JseBaseLib
 	 *
 	 * @param filename

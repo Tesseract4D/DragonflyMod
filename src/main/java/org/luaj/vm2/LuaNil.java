@@ -24,30 +24,30 @@ package org.luaj.vm2;
 /**
  * Class to encapsulate behavior of the singleton instance {@code nil}
  * <p>
- * There will be one instance of this class, {@link org.luaj.vm2.LuaValue#NIL}, per Java
- * virtual machine. However, the {@link Varargs} instance {@link org.luaj.vm2.LuaValue#NONE}
+ * There will be one instance of this class, {@link LuaValue#NIL}, per Java
+ * virtual machine. However, the {@link Varargs} instance {@link LuaValue#NONE}
  * which is the empty list, is also considered treated as a nil value by
  * default.
  * <p>
  * Although it is possible to test for nil using Java == operator, the
- * recommended approach is to use the method {@link org.luaj.vm2.LuaValue#isnil()} instead.
- * By using that any ambiguities between {@link org.luaj.vm2.LuaValue#NIL} and
- * {@link org.luaj.vm2.LuaValue#NONE} are avoided.
+ * recommended approach is to use the method {@link LuaValue#isnil()} instead.
+ * By using that any ambiguities between {@link LuaValue#NIL} and
+ * {@link LuaValue#NONE} are avoided.
  *
- * @see org.luaj.vm2.LuaValue
- * @see org.luaj.vm2.LuaValue#NIL
+ * @see LuaValue
+ * @see LuaValue#NIL
  */
-public class LuaNil extends org.luaj.vm2.LuaValue {
+public class LuaNil extends LuaValue {
 
 	static final LuaNil _NIL = new LuaNil();
 
-	public static org.luaj.vm2.LuaValue s_metatable;
+	public static LuaValue s_metatable;
 
 	LuaNil() {}
 
 	@Override
 	public int type() {
-		return org.luaj.vm2.LuaValue.TNIL;
+		return LuaValue.TNIL;
 	}
 
 	@Override
@@ -66,8 +66,8 @@ public class LuaNil extends org.luaj.vm2.LuaValue {
 	}
 
 	@Override
-	public org.luaj.vm2.LuaValue not() {
-		return org.luaj.vm2.LuaValue.TRUE;
+	public LuaValue not() {
+		return LuaValue.TRUE;
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class LuaNil extends org.luaj.vm2.LuaValue {
 	}
 
 	@Override
-	public org.luaj.vm2.LuaValue getmetatable() {
+	public LuaValue getmetatable() {
 		return s_metatable;
 	}
 
@@ -91,7 +91,7 @@ public class LuaNil extends org.luaj.vm2.LuaValue {
 	}
 
 	@Override
-	public org.luaj.vm2.LuaValue checknotnil() {
+	public LuaValue checknotnil() {
 		return argerror("value");
 	}
 
@@ -105,13 +105,13 @@ public class LuaNil extends org.luaj.vm2.LuaValue {
 	public boolean optboolean(boolean defval) { return defval; }
 
 	@Override
-	public org.luaj.vm2.LuaClosure optclosure(LuaClosure defval) { return defval; }
+	public LuaClosure optclosure(LuaClosure defval) { return defval; }
 
 	@Override
 	public double optdouble(double defval) { return defval; }
 
 	@Override
-	public org.luaj.vm2.LuaFunction optfunction(LuaFunction defval) { return defval; }
+	public LuaFunction optfunction(LuaFunction defval) { return defval; }
 
 	@Override
 	public int optint(int defval) { return defval; }
@@ -123,19 +123,19 @@ public class LuaNil extends org.luaj.vm2.LuaValue {
 	public long optlong(long defval) { return defval; }
 
 	@Override
-	public org.luaj.vm2.LuaNumber optnumber(LuaNumber defval) { return defval; }
+	public LuaNumber optnumber(LuaNumber defval) { return defval; }
 
 	@Override
-	public org.luaj.vm2.LuaTable opttable(LuaTable defval) { return defval; }
+	public LuaTable opttable(LuaTable defval) { return defval; }
 
 	@Override
-	public org.luaj.vm2.LuaThread optthread(LuaThread defval) { return defval; }
+	public LuaThread optthread(LuaThread defval) { return defval; }
 
 	@Override
 	public String optjstring(String defval) { return defval; }
 
 	@Override
-	public org.luaj.vm2.LuaString optstring(LuaString defval) { return defval; }
+	public LuaString optstring(LuaString defval) { return defval; }
 
 	@Override
 	public Object optuserdata(Object defval) { return defval; }
@@ -144,5 +144,5 @@ public class LuaNil extends org.luaj.vm2.LuaValue {
 	public Object optuserdata(Class c, Object defval) { return defval; }
 
 	@Override
-	public org.luaj.vm2.LuaValue optvalue(LuaValue defval) { return defval; }
+	public LuaValue optvalue(LuaValue defval) { return defval; }
 }

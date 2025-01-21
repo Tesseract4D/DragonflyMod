@@ -21,17 +21,13 @@
 ******************************************************************************/
 package org.luaj.vm2.ast;
 
-import org.luaj.vm2.ast.NameScope;
-import org.luaj.vm2.ast.Stat;
-import org.luaj.vm2.ast.Visitor;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class Block extends org.luaj.vm2.ast.Stat {
+public class Block extends Stat {
 
-	public List<org.luaj.vm2.ast.Stat> stats = new ArrayList<>();
-	public NameScope scope;
+	public List<Stat> stats = new ArrayList<>();
+	public NameScope  scope;
 
 	public void add(Stat s) {
 		if (s == null)

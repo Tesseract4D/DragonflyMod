@@ -21,12 +21,8 @@
 ******************************************************************************/
 package org.luaj.vm2.ast;
 
-import org.luaj.vm2.ast.Block;
-import org.luaj.vm2.ast.SyntaxElement;
-import org.luaj.vm2.ast.Visitor;
-
 public class Chunk extends SyntaxElement {
-	public final org.luaj.vm2.ast.Block block;
+	public final Block block;
 
 	public Chunk(Block b) {
 		this.block = b;
