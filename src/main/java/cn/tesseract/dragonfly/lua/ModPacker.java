@@ -1,6 +1,7 @@
 package cn.tesseract.dragonfly.lua;
 
 import cn.tesseract.dragonfly.DragonflyCoreMod;
+import net.minecraft.launchwrapper.Launch;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -20,6 +21,7 @@ public class ModPacker {
         Manifest manifest = new Manifest();
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
         manifest.getMainAttributes().put(new Attributes.Name("FMLCorePlugin"), packageName + ".CoreMod");
+        manifest.getMainAttributes().put(new Attributes.Name("FMLCorePluginContainsFMLMod"), "true");
 
         String packagePath = packageName.replace('.', '/');
         String assetsPath = "assets/" + modid + "/";
@@ -47,6 +49,9 @@ public class ModPacker {
             jos.closeEntry();
 
             addFilesToJar(assetsPath + "scripts/", DragonflyCoreMod.scriptDir, jos);
+            File resources = new File(Launch.minecraftHome, "resources/" + modid);
+            if (resources.exists())
+                addFilesToJar(assetsPath, resources, jos);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

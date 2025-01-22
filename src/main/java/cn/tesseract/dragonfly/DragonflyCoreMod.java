@@ -118,7 +118,6 @@ public class DragonflyCoreMod extends HookLoader {
 
     @Override
     protected void registerHooks() {
-        ModPacker.generateModFile("cn.tesseract.skeleton", "nerf", new File(Launch.minecraftHome, "mod.jar"));
         try {
             File[] files = scriptDir.listFiles();
             if (files != null) for (File file : files) {
