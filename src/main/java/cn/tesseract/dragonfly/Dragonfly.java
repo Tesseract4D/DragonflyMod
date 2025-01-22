@@ -16,22 +16,7 @@ public class Dragonfly {
     public static final Logger logger = LogManager.getLogger("Lua");
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent e) {
-        LuaBridge.callLuaEvent(e);
-    }
-
-    @Mod.EventHandler
     public void server(FMLServerStartingEvent e) {
         e.registerServerCommand(new CommandReload());
-    }
-
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent e) {
-        LuaBridge.callLuaEvent(e);
-    }
-
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent e) {
-        LuaBridge.callLuaEvent( e);
     }
 }

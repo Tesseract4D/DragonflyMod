@@ -3,10 +3,7 @@ package cn.tesseract.dragonfly;
 import cn.tesseract.dragonfly.event.LuaReloadEvent;
 import cn.tesseract.dragonfly.hook.DragonflyHook;
 import cn.tesseract.dragonfly.hook.ForgeEventHook;
-import cn.tesseract.dragonfly.lua.DragonflyBaseLib;
-import cn.tesseract.dragonfly.lua.LuaBridge;
-import cn.tesseract.dragonfly.lua.LuaHookRegistry;
-import cn.tesseract.dragonfly.lua.LuaHookTransformer;
+import cn.tesseract.dragonfly.lua.*;
 import cn.tesseract.mycelium.asm.minecraft.HookLoader;
 import cpw.mods.fml.common.LoaderState;
 import net.minecraft.launchwrapper.Launch;
@@ -15,9 +12,7 @@ import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
 import org.luaj.vm2.lib.jse.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +32,19 @@ public class DragonflyCoreMod extends HookLoader {
         final Globals f = new Globals();
         globals.put(modid, f);
 
-        f.load(new DragonflyBaseLib());
+        f.load(modid.equals("dragonfly") ? new JseBaseLib() {
+            @Override
+            public InputStream findResource(String filename) {
+                File f = new File(scriptDir, filename + ".lua");
+                if (!f.exists())
+                    return super.findResource(filename);
+                try {
+                    return new BufferedInputStream(new FileInputStream(f));
+                } catch (IOException ioe) {
+                    return null;
+                }
+            }
+        } : new ModBaseLib("/assets/" + modid + "/scripts/"));
         f.load(new PackageLib());
         f.load(new Bit32Lib());
         f.load(new TableLib());
@@ -75,14 +82,14 @@ public class DragonflyCoreMod extends HookLoader {
         f.set("log", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {
-                Dragonfly.logger.info(arg.arg1().tostring());
+                Dragonfly.logger.info(arg.tostring());
                 return NONE;
             }
         });
         f.set("registerLuaEvent", new TwoArgFunction() {
             @Override
             public LuaValue call(LuaValue arg1, LuaValue arg2) {
-                LuaHookRegistry.registerLuaEvent(arg1.arg1().tojstring(), arg2.arg(2));
+                LuaHookRegistry.registerLuaEvent(arg1.tojstring(), arg2);
                 return NONE;
             }
         });
@@ -111,6 +118,7 @@ public class DragonflyCoreMod extends HookLoader {
 
     @Override
     protected void registerHooks() {
+        ModPacker.generateModFile("cn.tesseract.skeleton", "nerf", new File(Launch.minecraftHome, "mod.jar"));
         try {
             File[] files = scriptDir.listFiles();
             if (files != null) for (File file : files) {

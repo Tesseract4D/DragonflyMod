@@ -2,8 +2,6 @@ package cn.tesseract.dragonfly.lua;
 
 import cn.tesseract.mycelium.MyceliumCoreMod;
 import cn.tesseract.mycelium.asm.*;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.event.FMLStateEvent;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -32,10 +30,7 @@ public class LuaBridge {
     }
 
     public static void callLuaEvent(Object event) {
-        if (event instanceof FMLStateEvent e) {
-            callLuaEvent(Loader.instance().activeModContainer().getModId() + ":" + e.getModState().toString(), event);
-        } else
-            callLuaEvent(event.getClass().getName(), event);
+        callLuaEvent(event.getClass().getName(), event);
     }
 
     public static void callLuaEvent(String name, Object event) {
